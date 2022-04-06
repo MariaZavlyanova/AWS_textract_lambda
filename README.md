@@ -20,8 +20,11 @@ vérifier la connection :
 Vérifier que le contenu soit bon, et corrésponde à :
 
 [default]
+
 aws_access_key_id = <fichier zip envoyé par mail>
+
 aws_secret_access_key = <fichier zip envoyé par mail>
+
 
 # Ajouter un fichier pdf au Bucket :
 il est possible de stocker temporairement le pdf dans le fichier "articles/" puis de l'envoyer sur le bucket

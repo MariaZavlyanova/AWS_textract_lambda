@@ -4,18 +4,30 @@ Augmentation au projet fil-rouge
 
 
 
-# Mes étapes
-## Adding boto3
-1. Python dependency manager “PIP” is needed to download the “boto3” package.
-
-2. Execute following command in command shell.
-    $ pip install — target ./python boto3
-
-3. After the package is downloaded, Zip the “python” folder.
-
-4. Go to AWS Lambda -> Layers and click “Create Layer”.
-
-Accesss point to S3
-arn:aws:s3:eu-west-3:557937909547:accesspoint/maria-fil-rouge-s3-accesspoint
+# Les étapes à suivre pour se connecter au Bucket S3
 
 
+    $ sudo apt install awscli
+    $ aws configure
+
+ID : AKIAYDZ5Q34V6N642EHA
+secret acces key : (stored in secret _key.txt)
+
+vérifier la connection :
+    $ cat  ~/.aws/config
+Vérifier que le contenu soit bon, et corrésponde à :
+[default]
+aws_access_key_id = AKIAYDZ5Q34V6N642EHA
+aws_secret_access_key = (contenu du fichier txt)
+
+# Ajouter un fichier pdf au Bucket :
+il est possible de stocker temporairement le pdf dans le fichier "articles/" puis de l'envoyer sur le bucket
+    $ aws s3api put-object --bucket maria-fil-rouge-s3-input --key <object key name>.pdf --body ./articles/<object key name>.pdf
+
+# Récupérer le texte extrait du pdf :
+Le texte récupéré sera stoqué dans le dossier "extracted_text/"
+    $ aws s3api get-object --bucket maria-fil-rouge-s3-input --key <object key name>.txt ./extracted_text/<object key name>.txt
+
+# Example :
+    $ aws s3api put-object --bucket maria-fil-rouge-s3-input --key 2109.05504.pdf --body articles/2109.05504.pdf
+    $ aws s3api get-object --bucket maria-fil-rouge-s3-input --key 1810.11936.txt ./extracted_text/1810.11936.txt

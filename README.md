@@ -41,3 +41,16 @@ Le texte récupéré sera stoqué dans le dossier "extracted_text/"
     $ aws s3api put-object --bucket maria-fil-rouge-s3-input --key 2109.05504.pdf --body articles/2109.05504.pdf
     $ aws s3api get-object --bucket maria-fil-rouge-s3-input --key 1810.11936.txt ./extracted_text/1810.11936.txt
     
+# Extraire les noms propres du fichier texte :
+Le fichier texte est normalement automatiquement rangé dans le dossier ./extracted_text/
+
+Si non, s'assurer que le fichier est bien rangé
+
+Lancer le code pour extraire les personnes :
+
+    $ python3 entity_extraction.py
+    
+Suivre les instructions dans la ligne de commande...
+
+Récupérer les noms propres dans le fichier json !!
+  

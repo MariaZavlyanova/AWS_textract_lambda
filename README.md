@@ -19,11 +19,11 @@ vérifier la connection :
     
 Vérifier que le contenu soit bon, et corrésponde à :
 
-[default]
+    [default]
 
-aws_access_key_id = <fichier zip envoyé par mail>
+    aws_access_key_id = <fichier zip envoyé par mail>
 
-aws_secret_access_key = <fichier zip envoyé par mail>
+    aws_secret_access_key = <fichier zip envoyé par mail>
 
 
 # Ajouter un fichier pdf au Bucket :

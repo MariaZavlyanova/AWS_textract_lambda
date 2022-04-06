@@ -1,0 +1,1488 @@
+DRAFT VERSION SEPTEMBER 14, 2021
+Typeset using LATEX twocolumn style in AASTeX63
+The Effects of Circumstellar Dust Scattering on the Light Curves and Polarizations of Type Ia
+Supernovae*
+MAOKAI Hu, 1,2 LIFAN WANG, 3 AND XIAOFENG WANG4,
+1 Purple Mountain Observatory, Chinese Academy of Sciences, Nanjing 210023, China
+2 School of Astronomy and Space Science, University of Science and Technology of China, Hefei, Anhui 230026, China
+3
+George P. and Cynthia Woods Mitchell Institute for Fundamental Physics E3 Astronomy, Texas A. &3 M. University, Department
+of
+Physics and Astronomy, 4242 TAMU, College Station, TX 77843, USA
+4 Physics Department and Tsinghua Center for Astrophysics (THCA), Tsinghua University, Beijing, 100084, China
+5 Beijing Planetarium, Beijing Academy of Science and Technology, Beijing, 100044, China
+(Received June 1, 2019; Revised January 10, 2019; Accepted September 14, 2021)
+Submitted to ApJ
+ABSTRACT
+Observational signatures of the circumstellar material (CSM) around Type Ia supernovae (SNe Ia)
+provide a unique perspective to the progenitor systems. The pre-supernova evolution of the SN progen-
+itors may naturally eject CSM in most of the popular scenarios of SN Ia explosions. In this study, we
+investigate the influence of dust scattering on the light curves and polarizations of SNe Ia. A Monte
+Carlo method is constructed to numerically solve the radiative transfer process through the CSM.
+Three types of geometric distributions of the CMS are considered: spherical shell, axisymmetric disk,
+and axisymmetric shell. We show that both the distance of the dust to the SNe and the geometric
+distribution of the dust affect the light curve and color evolutions of SNe. Contrary to previous studies,
+we found that the geometric location of the hypothetical CS dust cannot be reliably constrained based
+on photometric data alone even for the best observed cases such as SN 2006X and SN 2014J, and time
+dependent polarimetry is an inimitable way to establish the geometric location of any dusty CSM.
+Our model results show that time sequence of broad-band polarimetry with appropriate time coverage
+from a months to about one year after explosion can provide unambiguous limits on the presence of
+CS dust around SNe Ia.
+Keywords: supernovae: general - supernovae: circumstellar material - supernovae: polarization
+1. INTRODUCTION
+matter from a non-degenerate star to reach the critical
+Type Ia supernovae (SNe Ia) have well-defined light
+mass for SN explosion (Whelan & Iben 1973; Nomoto
+curves and are employed empirically as cosmological
+1982), whereas in the double degenerate channel the ex-
+distance indicators (Riess et al. 1998, 2007; Perlmut-
+plosion is achieved by the merging of the WD with a
+ter et al. 1999; Wang et al. 2003; He et al. 2018). Of
+degenerate companion (Iben & Tutukov 1984; Webbink
+particular interest is the nature of their progenitor sys-
+1984). In either case, circumstellar material (CSM) may
+tems (e.g., Howell 2011; Maoz et al. 2014). Theoretically
+be ejected before the explosion and studies of which may
+there are two major channels, both involve white dwarfs
+provide unique clues to the nature of the progenitors of
+(WD) in binary systems (e.g., Hillebrandt & Niemeyer
+SNe Ia (Förster et al. 2012; Shen et al. 2013; Yang et al.
+2000). In the single degenerate channel the WD accretes
+2017; Li et al. 2019; Ding et al. 2021).
+SN 2002ic is the first SN la found to show a strong
+ejecta-CSM interaction (Hamuy et al. 2003; Wang et al.
+lifan@tamu.edu
+2004; Wood-Vasey et al. 2004). The SN 2002ic-like SNe
+kaihukaihul23@pmo.ac.cn
+Ia are identified by a spectroscopic transition from Type
+Ia to Type IIn after explosion. More such objects have
+*
+Supported by the National Natural Science Foundation of China.
+been found (Aldering et al. 2006; Ofek et al. 2007; Tad-
+2
+M.-K. Hu ET AL.
+dia et al. 2012; Fox et al. 2015; Inserra et al. 2016).
+Monte Carlo (MC) simulations can be used to solve
+Further evidence of the presence of a significant amount
+the dust scattering process (e.g., Witt 1977; Gordon
+CSM around SNe la came from spectroscopic observa-
+et al. 2001; Steinacker et al. 2013; Ding et al. 2021).
+tions of the narrow Na I D lines. Some SNe Ia show
+One application of this method is to simulate the polar-
+blueshifted and time evolving narrow Na I D absorption
+ization in dusty galaxies by virtue of the dust scattering
+lines (Patat et al. 2007; Blondin et al. 2009; Simon et al.
+through the interstellar material (Bianchi et al. 1996; De
+2009; Sternberg et al. 2011; Maguire et al. 2013; Wang
+Geyter et al. 2013; Peest et al. 2017). Another example
+et al. 2019). In particular, Wang et al. (2009) divided
+is the scattering by the CSM around core-collapse super-
+the spectroscopic normal SNe Ia into two groups, the
+novae, where light echoes and polarization signals are
+normal-velocity and high-velocity ones with Si II 16355
+calculated by the MC method (Mauerhan et al. 2017;
+velocity lower or higher than 11,800 km/s respectively.
+Nagao et al. 2017; Ding et al. 2021). The Henyey-
+Wang et al. (2019) found that the SNe Ia with high speed
+Greenstein phase function is usually used as the formula
+Si II features tend to be systematically associated with
+for dust scattering (Henyey & Greenstein 1941). Other
+blueshifted Na I D lines. According to these studies, the
+dust properties, such as the albedo, the cross-section,
+distances of the CSM to the SNe range from 1015 cm to
+and the asymmetry factor, can be taken from (Draine
+1019 cm, and the mass loss rates that lead to such CMS
+2003; Draine & Lee 1984) assuming the dust properties
+are usually lower than 10-4 ~ 10-9 Mo/year if they
+are similar to either the Milky Way dust or the dust in
+are the results of steady stellar winds, consistent with
+the Large Magellanic Cloud.
+the constraints set by the X-ray and radio observations
+A set of models are presented in this paper on the
+(Margutti et al. 2014; Pérez-Torres et al. 2014; Chomiuk
+scattering by the circumstellar dust of different geomet-
+et al. 2016; Lundqvist et al. 2020).
+ric shapes around SNe Ia. Because there are strong ev-
+The presence of CSM can also alter the light curves
+idences that the dust around SNe Ia may be system-
+and polarization of SNe Ia, due to light echoes caused by
+atically different from those in the Milky Way or the
+dust scattering (Chevalier 1986; Wang & Wheeler 1996;
+Large Magellanic Cloud (Wang et al. 2003; Patat et al.
+Patat 2005; Wang 2005; Goobar 2008; Ding et al. 2021).
+2012; Wang et al. 2019), the dust properties are nu-
+The light echoes from interstellar dusts have been ob-
+merically calculated through Mie scattering theory for a
+served, such as the light echoes of SN 2006X (Crotts &
+given grain size distribution using the refractive index of
+Yourdon 2008; Wang et al. 2008a), SN 2014J (Crotts
+Draine (2003). Section 2 describes the model, including
+2015; Yang et al. 2017), and some supernova remnants
+the dust properties, the MC models, and the geomet-
+(Rest et al. 2008, 2012). Bulla et al. (2018) adopted a
+ric distributions of the CSM. In Section 3, models are
+thin shell structure to fit the color evolution of several
+shown for a set of CSM distributions. Section 4 provides
+SNe la in the context of dust scattering, and suggested
+further discussions of the models and their applications
+that the shells are typically located at several parsecs
+to observational data. The conclusions are given in Sec-
+away from the SNe. The results however, as we will
+tion 5.
+show in this study, is dependent on the assumed geome-
+try of the dust distribution. Nagao et al. (2018) studied
+the polarization of SN 2012hn with two asymmetrically
+2. MODELS
+distributed CMS geometry (disk-like and jet-like), where
+2.1. Overview of the Radiative Transfer Process
+the degree of polarization may be as large as a few per-
+cent. Although the predicted high degree of polarization
+Generally, the radiative transfer process through the
+in Nagao et al. (2018) is inconsistent with observations
+circumstellar (CS) dust includes scattering, absorption,
+and re-emission. The re-emission contributes to infrared
+to date, such as those of SN 2005ke (Patat et al. 2012),
+2009dc (Tanaka et al. 2010), and 2014J (Kawabata et al.
+flux and will not be considered here. The photon state in
+2014; Porter et al. 2016; Yang et al. 2018), it does pro-
+the Monte Carlo process is described by the Stokes pa-
+vide a way of identifying the geometric distribution of
+rameters (S = (1,Q,U,V)7) following Chandrasekhar
+CSM. Yang et al. (2018) obtained precise polarization
+(1950), where I is the intensity, Q and U describe lin-
+images of SN 2014J from ~ 277 days to ~ 1181 days af-
+ear polarization, V describes circular polarization and
+ter the maximum light, and the polarization signal can
+T stands for matrix transpose. The degree of linear po-
+be modeled by a dusty blob located at around 5 X 1017
+larization (P) can be written as P = VIQ² + U²)/1
+cm to the SN on the plane of the sky at the location of
+in which the circular polarization (V) is ignored in our
+the SN.
+models. Solving the radiative transfer process can be re-
+garded as determining a kernel function which links the
+Stokes parameters before and after the photon-CSM in-
+CSM AROUND SNE IA
+3
+teraction:
+and the integration of photons escaped from the CSM
+Sx(t', S2, Ü) = Sx,0(t') exp(-TX)
+to build the kernel functions (Equation 1) and solutions.
+(1)
+Photons are launched with a given Stokes parameters
++
+onto a specific direction and propagate a distance until
+being absorbed or scattered. The photons are assumed
+where t' is the time after explosion, S is the solid an-
+to be unpolarized initially as can be justified by spec-
+gle to the observer, S1,0(t') is the Stokes parameter at
+tropolarimetry of SNe Ia (Wang & Wheeler 2008) and
+wavelength \ of the SNe Ia before dust scattering, TX
+their Stokes parameter is expressed as (1,0,0,0)2 The
+is the optical depth at wavelength 1, K1, s(t,9,U) is a
+geometric size of the SN is much smaller than the ex-
+kernel function that can be calculated by assuming a
+tension of the scattering material and is thus set to zero
+6-function pulse as the input signal with U being an ar-
+in all the calculations. The radiation from the SN is
+ray describing the parameters related to the geometric
+assumed to be spherically symmetric. The distance to
+distribution and optical properties of the dust. Equa-
+the first photon-matter interaction depends on the op-
+tion 1 contains two parts: the transmitted component
+tical depth along the radial direction, which is related
+along the line of sight )exp(-Tx), and the scat-
+to the composition and number density (N(R)) of dust
+tered component J Ix,o(t' - t)K1,s(t,Q,U)dt. We will
+grains. Assuming a steady stellar wind with constant
+use the optical depth in B-band as a measure of the
+velocity, the density can be described by N(R) = A/R²
+optical properties of the CS dust. The optical depth of
+with A being a scaling parameter and R being the dis-
+any given band can be directly calculated from that of
+tance to the SN. The probability for a photon propa-
+the B-band based on Mie scattering for a given dust dis-
+gating a distance less than Rin + D without interacting
+tribution. The kernel function K1,s(t.S)UU is function
+with a dust particle is expressed as p(R < Rin + D) =
+of the dust properties, the scattering process, and the
+1 - exp(-T(Rin + -D)), where Rin is the inner boundary
+geometric distributions of CSM.
+of the CSM and T(Rin + D) is the optical depth at the
+distance of Rin + D. The probability p has a uniform
+2.2. Dust Properties
+distribution ranging from 0 to 1 - exp(-To), where TO is
+In this study, all the values of albedo (w), scattering
+the optical depth of CSM along the direction of photon
+cross-section (Osca), extinction cross-section (Text), and
+propagation. This treatment of the scattering process
+scattering matrix are numerically calculated from Mie
+is identical to that of Witt (1977). Hence, the first free
+scattering theory (Wolf & Voshchinnikov 2004) based on
+propagation distance D in the CSM could be generated
+the refractive index of dust grains from Draine (2003)
+through a MC process:
+and the size distribution of the dust grains takes the
+following form:
+D= D = + -
+Rin
+(3)
+(2)
+where ao and bo are 4.0 and 7.5, respectively. The shape
+where € is a random number in the range (exp(-To),1).
+of the curve given in Equation 2 is consistent with the
+For scattering after the first interaction, we adopted the
+results in Nozawa et al. (2015), with TO = 0.05 um rep-
+same approach of Witt (1977) by assuming a locally uni-
+resenting small size of dust grains with average radius of
+form distribution of CSM, the propagation distance of a
+0.045 um. The size of dust grains on the line-of-sight to
+photon is formulated by D = - with
+SNe Ia is likely to be smaller than typical dust grains in
+the ranges of the random number € being from 0 to 1.0.
+the Milky Way, as may be inferred from the low values
+The scattering process is calculated by computing the
+of total-to-selective extinction ratio for typical SNe Ia
+scattering angle following a distribution related to the
+(Wang 2005; Wang et al. 2006; Foley et al. 2014; Aman-
+scattering matrix and the Stokes parameters of the scat-
+ullah et al. 2015; Gao et al. 2020). In addition, only
+tered photon by the rotational matrix and scattering
+silicate grains with single chemical composition are con-
+matrix. To increase the computational efficiency, the
+sidered in our models, the difference is insignificant for
+absorption process is modeled by the weighting function
+models with both silicate and graphite grains (Gao et al.
+as described in Witt (1977). Once the photon is out of
+2015).
+the CSM, the Stokes parameters are integrated to the
+same arrival time at the observer inside a solid angle
+2.3. Monte Carlo Method
+interval AS.
+The MC method includes several steps: the launching
+With the total number of photons (Nphoton) emitted
+of photons, the tracking of photon through the CSM,
+in the MC program, the kernel function of the Stokes
+M.-K. Hu ET AL.
+4
+Rout
+Rout
+be expected based on observations of the stellar environ-
+ment around known white dwarfs; the geometry carries
+Cobs
+important information in understanding the mass loss
+Rin
+Rin
+history of the progenitor systems.
+With Figure 1 we can define the model parameters for
+the calculations of dust scattering. These are the inner
+-1017
+10¹7 2 x 1017
+-2 x 1017
+-1017
+0
+1017
+2 x 10¹7
+(Rin) and outer (Rout) radii that define the boundaries
+Shell (cm)
+Asyshell (cm)
+of the dust distribution, from them we define the exten-
+sion of the CSM as Rwid = Rout - Rin. As shown in
+loobs
+Figure 1, the angle to observer is given by Cobs, and the
+-Jodisk
+opening angle of the disk is For the shell and disk
+structures, the number density of dust grains along the
+radial direction is given as A/R², where the parameter
+A is a scaling constant and R is the distance to the SN.
+-1017
+1017
+2 x 1017
+Disk (cm)
+For the axisymmetric shell structure, the density follows
+Figure 1. Three types of CSM distributions: spherical shell
+the relation N(R,0) = A/R² X + 1 - so),
+(top left), axisymmetric shell (Asyshell, top right), and ax-
+where parameters m and SO capture the level of angu-
+isymmetric disk (bottom). The transparency of the color
+lar asymmetries. SO = 0 represents the axisymmetric
+represents the number density of dust grains.
+shell is reduced to a spherical shell and the range of so
+is from 0 to 1. The parameter m > 0 represents the
+parameter is reconstructed as:
+degree of dust gathering in the direction of the equa-
+tor. With the definition of the number density of dust
+K1,s(t.S),U) =
+grains N(R), the optical depth T along the radial di-
+(4)
+rection is expressed as J N(R) dR. Thus, three pa-
+where Nx,s(t,92,U) is the corresponding values of the
+rameters (Rin, Rawid, T) are needed to define the geomet-
+Stokes parameter with a time delay of t and integrated
+ric properties of a spherical shell. Four parameters are
+over the solid angle AS. The size of AS determines
+needed for an axisymmetric disk: (Rin, Rwid, T, Adisk).
+the angular resolution of the model, Nphoton is the total
+Five parameters are needed for an axisymmetric shell:
+number of injected photons in the calculations, Semit is
+(Rin, Rwid, T, m, so). Notice that the optical depth of
+the solid angle in which the photons are injected into
+the axisymmetric shell is defined at the direction with
+the CSM, and AS is the solid angle over which the
+the maximum number density of dust grains. The angle
+photons escaping from the CMS are integrated. For a
+to the observer Oobs is needed as an additional parameter
+spherically symmetric structure, the solid angles of both
+for the axisymmetric shell and disk structures.
+emitting and collecting photons (Lemit and are 47.
+The likely values for the parameters are poorly known.
+For an axially symmetric disk or axisymmetric shell AR
+SN 2002ic-like supernova represents an extreme case
+is 27 sin 040, where so is the opening angle from the
+where the progenitor has lost a rather large amount of
+line-of-sight and is equal to 1° in our model to ensure
+matter shortly before the SN explosion (Hamuy et al.
+the accuracy of light curves and polarization. For con-
+2003; Wang et al. 2004; Aldering et al. 2006). Spec-
+venience, the kernel function K1,s(t,92,U) is simplified
+tropolarimetry shows that the interaction between the
+to Ks(t). K1(t), Ko(t), and Ku(t), representing the
+SN ejecta and the CSM is highly asymmetric (Wang
+kernel functions of Stokes parameters I, Q, and U, re-
+et al. 2004). In the recurrent nova scenario developed
+spectively. With all the reconstruction above, it is clear
+by Moore & Bildsten (2012) for these supernovae, a dif-
+that K1 = 1 if there is no CMS induced polarization.
+fusing medium-velocity (~ 10 - 100 km/s) CSM was
+ejected shortly before the supernova explosions. Spec-
+2.4. Geometric Distributions of CSM
+troscopically normal SNe Ia may have CSM at signifi-
+We considered three different geometric distributions
+cantly larger distances but has so far escaped any ob-
+of the CSM. These are spherical shells, axisymmetric
+servations detection. In this study, the dusty CSM is
+disks, and axisymmetric shells - as shown in Figure 1,
+restricted to be at distances around 1017 cm following
+which is similar to the plot in Figure 3 of Wang et al.
+the work of Wang et al. (2019).
+(2019). The shell or disk structures may arise from the
+stellar wind or accretion/excretion disks of the progen-
+3. RESULTS
+itor systems of SNe Ia. The details of the geometric
+3.1. Kernel of Intensity
+structure are not known but are asphericity which can
+CSM AROUND SNE IA
+5
+Parameter Range
+Grid Number
+S1
+2.0
+Shell, Number = 7
+Rin
+[20,200]
+19
+S, D, A
+S2
+Rwid
+[20,200]
+19
+S, D, A
+1.5
+S3
+[0.1, 1.0]
+10
+D
+T
+1.0
+T
+[0.05,0.25]
+5
+S, A
+Odisk
+[6°,30°]
+5
+D
+0.5
+(m,so)
+[(0.5,0.1), (5.0, 1.0)]
+10
+A
+0.0
+Oobs
+[10°,90°]
+9
+D, A
+3
+D1
+Table 1. CSM parameter ranges and grid numbers of the
+Disk, Number = 100
+D2
+three structures. The grids is uniformly distributed in the
+D3
+2
+parameter ranges. The terms 'S', 'D', 'A' represent the
+D4
+spheric shell, axisymmetric disk, and axisymmetric shell re-
+D5
+spectively. Here, Rin and Rwid are measured in light days.
+1
+0
+2.5
+A1
+Rin (ld)
+Rwid (ld)
+T
+Odisk
+(m, so)
+Oobs
+Asyshell, Number = 100
+A2
+2.0
+S1
+40
+40
+0.15
+A3
+S2
+50
+20
+0.15
+1.5
+A4
+S3
+20
+140
+0.2
+1.0
+D1
+40
+40
+0.5
+18°
+30°
+0.5
+D2
+20
+150
+0.7
+12°
+10°
+0.0
+D3
+30
+70
+0.3
+24°
+20°
+0
+20
+40
+60
+80
+100
+120
+140
+D4
+140
+20
+0.8
+24°
+60°
+Delay Time (day)
+D5
+140
+110
+0.9
+30°
+90°
+Figure 2. Upper panel: Kernel functions K1(t) that are
+A1
+40
+40
+0.15
+(2.5,0.5) 30°
+similar to the reference case S1 for the spherical shell model.
+A2
+20
+120
+0.25
+(4.5,0.9)
+10°
+The black solid, dotted, and dashed lines are for models S1,
+A3
+30
+90
+0.15
+(0.5,0.1) 90°
+S2, and S3, respectively. The other similar models are shown
+0.2
+(3.5,0.7) 90°
+as thin red lines. Middle panel: Kernel functions that are
+A4
+40
+30
+similar to the reference case D1. The black thick-solid, dot-
+Table 2. S*, D*, and A* represent the chosen CSM param-
+ted, dashed, dash-dotted, and thin-solid lines show models
+eters of the shell, disk, and axisymmetric shell structures,
+D1, D2, D3, D4, and D5. The red lines show 100 models
+respectively. S1, D1, and A1 are the corresponding reference
+randomly chosen from the 881 K1(t) models that are similar
+CSM parameters. The unit ld denotes light day.
+to D1. Lower panel: Kernel functions that are similar to
+the reference case A1. The black thick-solid, dotted, dashed,
+and dash-dotted lines show models A1, A2, A3, and A4, re-
+spectively. The thin red lines show 100 models randomly
+The kernel function K1(t) is the distribution of scat-
+selected models from the 564 K1(t) models that are similar
+tered photons as a function of the delay time t for a
+to D1. The details of the models shown in black lines can be
+S-function impulse of input light. This distribution is af-
+found in Table 2.
+fected by physical properties of the CSM and its geome-
+try. However, a variety of CSM parameters may produce
+ble 1 shows the configuration of the CSM parameter
+very similar kernel functions K1(t) and this introduces
+grids. The total number of the parameter grids is
+considerable amount of degeneracy which makes it dif-
+1, 805 (19 X 19 X 5) for the spherical shell, and 18, 050
+ficult to disentangle the various effects involved. For
+(19 X 19 X 5 X 10) for the axisymmetric disk and ax-
+an axisymmetric disk or shell, observers at smaller Cobs
+isymmetric shell models. For each simulation of the
+will detect a broader range of time delays, similar to
+axisymmetric disk or axisymmetric shell, 9 observing
+the effect caused by a larger Rin. Larger for an
+angles uniformly distributed from 10° to 90° were cal-
+axisymmetric disk, smaller (m,so) for an axisymmetric
+culated. The degeneracy of CSM parameters is compli-
+shell and larger values of T all lead to a larger number
+cated. For illustrative purposes only, we defined three
+of scattered photons.
+reference sets of CSM parameters S1, D1, and A1 for
+To understand such degeneracy, we calculated the ker-
+the spherical shell, axisymmetric disk, and axisymmet-
+nel functions for parameter grids that cover a broad
+ric shell, respectively, to examine the parameter degen-
+range of the geometric distribution of the CSM. Ta-
+6
+M.-K. Hu ET AL.
+3.0
+eracy. The parameters that define reference sets are
+D1
+shown in Table 2. The CSM parameters of these char-
+2.5
+Disk
+D2
+acteristic sets are consistent with the fitting results in
+2.0
+D3
+Wang et al. (2019) and Li et al. (2019), where the likely
+1.5
+D4
+distances to the CMS around a few high-velocity SNe Ia
+1.0
+D5
+were found to be approximately (1 2) X 1017 cm. The
+0.5
+optical depths were found to be around 0.7 for the ax-
+0.0
+isymmetric disk model, and 0.15 for the spherical shell
+-0.5
+and axisymmetric shell model.
+-
+-1.0
+Scattered light close to the optical maximum is mixed
+with the bright SN light and is hard to detect photo-
+A1
+1.50
+metrically. Late time data are more useful in quanti-
+Asyshell
+A2
+1.25
+tative diagnostics of the circumstellar dust. The de-
+A3
+1.00
+generacy of the kernel function post maximum light
+A4
+can be evaluated quantitatively by defining two mea-
+0.75
+sures: the average of K1(t) from 20 days to 100 days
+0.50
+KImean
+= K1(i//81, and the intensity ratio of
+0.25
+100 days and 20 days KIratio = K1(100)/Kr(20). The
+0.00
+similarity of the kernel function K, (t) is defined by the
+following criteria: KImean - mean < 0.1
+0
+25
+50
+75
+100
+125
+150
+175
+200
+and KIratio - Kg Iratio 1/Kiratio < 0.1, where Kq Imean
+Delay Time (day)
+and K° Iratio correspond to the values for the reference
+Figure 3. Same as Figure 2, but for the kernel function of
+models S1, D1, or A1.
+Stokes parameter Q just for the disk model (upper panel)
+With the above criteria, 7 sets of spherical shell models
+and axisymmetric shell model (lower panel). They have the
+share similar late time kernel distributions to the refer-
+same CSM parameters as the randomly selected 100 cases
+ence model S1. While for the reference cases D1 and
+for both models.
+A1, 881 and 564 sets show similar late time kernel func-
+tions, respectively. For the three geometric models of
+and there would be no net polarization. On the other
+the CSM, the fraction of late time kernel functions that
+hand, the scattered light from the axisymmetric disk or
+are similar to their corresponding reference models is less
+axisymmetric shell may be highly polarized. Without
+than 1% of the total number of models. Figure 2 shows
+loss of the generality, we will assume the axis of symme-
+all of the kernel functions similar to S1 at late time for
+try of the disk is pointing to the north, the Stokes pa-
+the spherical shell model in the top panel and 100 models
+rameter U of the axisymmetric disk and axisymmetric
+randomly selected from similar models for the axisym-
+shell is zero, and only the Stokes parameter nonzero,
+metric disk and axisymmetric shell models (middle and
+with the polarization degree P =
+bottom panels). For comparison, several characteristic
+The degree of polarization is the most significant when
+cases are highlighted for the spherical shell model (S1,
+viewed edge-on (Cobs = 90°), and is zero when viewed
+S2, S3), axisymmetric disk model (D1, D2, D3, D4, and
+face-on (Cobs = 0°). In addition to geometric distri-
+D5), and axisymmetric shell (A1, A2, A3, and A4). The
+bution, polarization also depends on the optical cross
+individual CMS parameters for these characteristic cases
+section and albedo of the dust grains. Again, the calcu-
+are listed in Table 2. The degeneracy is obvious, e.g.,
+lation of the polarization can be done by first calculating
+for axisymmetric shell model, the large T and (m,so)
+the kernel function Kel for the Stokes parameter Q,
+values in case A2 and the small corresponding values
+by assuming the light source is a S-function.
+in case A3 results in similar kernel function K1(t). As
+The different CSM parameters that generate very sim-
+we just discussed, with this kernel function degeneracy,
+ilar kernel functions of the intensity (Figure 2) now
+the CSM parameters can not be uniquely determined by
+generate dramatically different kernel functions for the
+fitting the light curve data only.
+Stokes parameter Q. This demonstrates that the combi-
+nation of K1(t) and KQ(t) can distinguish the different
+dust geometries and thus break the degeneracy. Figure 3
+3.2. Kernel of the Stokes Parameter Q
+shows the kernel function K(t) of the 100 cases shown
+Polarization can be a powerful diagnostic tool if dust
+in Figure 2 for the axisymmetric disk and axisymmetric
+scattering is indeed important. For the spherical shell,
+shell model. The polarization curves show a broad range
+the polarization of the scattered photons cancels out,
+CSM AROUND SNE IA
+7
+75
+Ko = - 1.8x10-4
+Ko = - -1.1x10-5
+Ko =4.1x10-4 =
+Ko = - 9.3 X 10-6
+50
+25
+0
+-25
+-50
+-
+-75
+D1
++20 Day
++32 Day
++47 Day
++90 Day
+75
+Ko = 9.9 X 10-5
+Ko = 1.6 X 10-
+4
+Ko = 3.6 X 10-5
+D1
+4
+A1
+50
+25
+2
+0
+-25
+0
+-50
+-75
+A1
++20 Day
++50 Day
++90 Day
+-50
+0
+50
+-50
+0
+50
+-50
+0
+50
+-2
+0
+Distance (Id)
+Distance (Id)
+50
+100
+150
+Distance (Id)
+Delay Time (day)
+Figure 4. The upper panel: the intersecting area between the parabolic surface and the CSM projecting to the line of sight
+(red region) and Q-U vectors (short black lines) of four epochs (+20d, +32d, +47d, and +90d) for the disk model D1. The lower
+panel: three epochs (+20d, +50d, and +90d) for the axisymmetric shell model A1. The lower-right panel: the corresponding
+Ko(t) curves of the disk and axisymmetric shell models.
+of behaviors which make them very powerful in estab-
+Thus, K(t) is positive with any lobs or any values of
+lishing the presence of CS dust and constraining their
+CSM parameters for the axisymmetric shell model A1.
+geometric structures. As an example, KQ(t) of D3 is
+This makes Ko(t) to never change signs as shown in the
+smaller than that of D5 owing to a smaller Oobs, and the
+bottom panel of Figure 3. While for the disk model,
+time evolution of the degree of polarization is sensitive
+the polarization may be dominated by scattering from
+to the geometric size and location of the dust. With the
+either the equatorial or the polar regions depending on
+same obs of 90°, A3 and A4 have distinctively different
+the epochs of observations. This causes KQ(t) to change
+KQ(t owing to their different values of (m, so).
+signs with time, as shown in Figure 4 and Figure 3. Note
+that the degrees of polarization are slightly different in
+3.3. Q-U Distribution for Reference Cases D1 and A1
+Figure 4 and Figure 3 for models D1 and A1. This is
+Light echoes can be effectively used as a tomographic
+because multiple scattering is assumed in Figure 3 but
+method that can effectively probe the 3-D geometry of
+single scattering approximation is assumed in Figure 4
+the scattering material. This tool becomes even more
+for illustrative purposes.
+powerful with the inclusion of polarimetry. It is inter-
+4. THE SCATTERED LIGHT OF TYPE IA
+esting to note that the two models D1 and A1 have very
+SUPERNOVAE
+different KQ(t) curves, but with geometric structures
+that are rather similar (Figure 3). The differences can
+In this section, the kernel functions are convolved with
+be examined by calculating the surface brightness of the
+an spectral energy distribution (SED) template to pre-
+scattered light and the 2-D Q-U distributions for the ref-
+dict the light curves, polarization, and spectral evolution
+erence cases A1 and D1. For the purpose of making the
+of Type Ia supernovae. We will also apply these mod-
+figures, we assumed the single scattering approximation.
+els to fit the E(B - V) color curves as have been done
+The results are shown in Figure 4.
+previously in Bulla et al. (2018) but with the goal to
+The axisymmetry ensures that the integrated Stokes
+study the degenerate nature of the model parameters
+parameter U is 0, therefore only the Q component of the
+and the difficulties in uniquely constraining the CS dust
+Stokes parameter needs to be considered. For the ax-
+geometry without detailed polarimetry time sequence.
+isymmetric shell structure, Q from the equatorial region
+4.1. The Light Curves and Polarization
+is always larger than Q from the two polar directions.
+8
+M.-K. Hu ET AL.
+D1
+A1
+0
+D2
+A2
+10
+5
+D3
+A3
+D4
+A4
+2
+Shell
+8
+D5
+4
+4
+6
+Disk
+Asyshell
+3
+6
+Disk
+4
+2
+2
+1
+8
+Asyshell
+0
+0
+10
+20
+0
+20
+40
+60
+80
+-20
+0
+20
+40
+60
+80
+-20
+0
+20
+40
+60
+80
+Days after B Maximum
+Days after B Maximum
+Days after B Maximum
+Figure 5. The left panel: the predicted B-band light curves (red lines) with the same CSM parameter values as in Figure 2
+vs. the B-band template of SNe Ia (black lines). Middle and right panels: the predicted polarization curves of a disk
+and
+axisymmetric shell, respectively. All the light curves are scaled to maximum light.
+The template for light curves or spectra should come
+4.2. Constraining the Distance from Multiple-epoch
+from SNe Ia without CS dust in their vicinity. Here, the
+Polarization
+spectral template is adopted from Hsiao et al. (2007).
+The results above suggest that the combined obser-
+This template is used to derive the light curves by ap-
+vation of the photometry and polarization is a promis-
+plying the filter transmission functions. Figure 5 shows
+ing probe to constrain CSM features, which is based on
+the B-band light curves and polarizations for the dust
+the results that similar light curves may be related to
+models we have investigated, obtained by convolving the
+variety of CSM parameters while the corresponding po-
+spectral template with the relevant kernel functions de-
+larization curves may help to break this degeneracy. In
+rived in the previous section. A common feature of the
+this section, we show that polarimetry is a crucial probe
+models with CS dust scattering is a flux excess a month
+to constraining the CSM around SNe Ia.
+or SO after the maximum brightness.
+Take the axisymmetric shell models as examples, the
+As a consequence of the sensitivity of the kernel func-
+degree of polarization is sensitive to T, (m, and Oobs.
+tion Ko(t) to dust distribution geometry, the predicted
+The values of these two parameters affect the overall
+polarization curves are dramatically different for dif-
+levels of polarization. On the other hand, the inner or
+ferent model parameters. This makes polarimety a
+outer boundaries of CSM are sensitive to the time evolu-
+promising tool to constrain the dust distribution around
+tion of the degree of polarization. These properties can
+SNe Ia. We note that the majority of disk model predicts
+be employed to constrain the location of the CS dust.
+large polarization degrees that are observable for nearby
+In order to quantify the effect of the CSM boundary
+supernovae. For the parameters we have adopted, the
+on the degree of polarization, we calculated the ratio
+axisymmetric shells predict polarization degree that are
+of the degrees of polarization at +120 and +40 days,
+in general lower than 1.0%. In both the axisymmetric
+P120/P40- If the distance of CSM is significantly smaller
+shell and disk cases, the degree of polarization peaks at
+than 40 light days (~ 5 x 1016 cm), typical delay time of
+around 50 days past optical maximum, and for the ax-
+scattered photons is small and the degree of polarization
+isymmetric disk model the degree of polarization can be
+at +40 days is usually larger than that at +120 days.
+as large a few percent. Time sequence of polarimetry at
+But if the distance of CSM is much at a distance around
+2 months can be used to test these models and estab-
+120 light days (~ 3 X 1017 cm), the polarization ratio
+lish or disprove the existence of CS dust around SNe Ia.
+may just be the opposite.
+No polarization evolution at such late phases has been
+Figure 6 shows the relationship between the polariza-
+acquired for any SNe Ia so far.
+tion ratio P120/P40 and the inner boundary of CSM. It
+can be clearly seen that for different values of T, (m, so)
+and Oobs, an approximately monotonic relationship can
+CSM AROUND SNE IA
+9
+(m, So, Oobs, Rwid) =(2.0,0.6,60°,40ld) ,
+(T, Cobs, Rwid) = (0.25,60°,40ld)
+(T, m, So, Rwid) = (0.25, 2.0,0.6,40ld)
+10
+8
+T
+(m, So)
+Oobs
+6
+0.5
+(5, 1)
+90°
+4
+0.3 T
+(3, 0.5)
+50
+2
+0.1
+(1,0.1)
+10°
+0
+50
+100
+150
+200
+250
+300
+50
+100
+150
+200
+250
+300
+50
+100
+150
+200
+250
+300
+Rin (light day)
+Rin (light day)
+Rin (light day)
+Figure
+6.
+The depth of the color represents the changing values of parameter T (the left panel), (m,so) (the middle panel),
+and loobs (the right panel). For each configuration, the thickness of the CS dust in radial direction Rwid is set to 40 ld. For each
+panel, the values of the other relevant parameters are shown at the top of each panel.
+be established between the polarization ratio P120/P40
+from 350 nm to 750 nm. Similar behavior can be seen
+and the location of the inner boundary Rin. For the po-
+in the degree of polarization shown in the bottom panel,
+larization ratio shown in Figure 6, Rwid is set to 40 ld in
+albeit the degrees of polarization are significantly differ-
+all simulations. As expected, Figure 6 shows also that
+ent for different models. In general, the fitting of spec-
+the polarization ratio can be dependent on the optical
+tropolarimetry can place tighter constraints on the dust
+depth and the direction of the observations, but the sen-
+properties, such as the chemical composition and the
+sitivity relative to the parameters describing the level of
+size distribution of the dust grains, but time sequence
+asymmetry is rather weak.
+of broad band polarimetry is sufficient in constraining
+the geometric shape of the CS dust. Densely time sam-
+4.3. The Spectra of Type Ia Supernovae with an
+pled spectropolarimetry (e.g., more than two observa-
+Arisymmetric Dusty Circumstellar Shell
+tions in late phases) can be difficult when considering
+The spectroscopic and spectropolarimetric evolution
+observational cost but is fortunately not needed.
+of SNe Ia can be affected by the presence of asymmetric
+dusty CSM. As an example, Figure 7 shows the spec-
+4.4. The E(B-V) Curves of SN 2006X and 2014J and
+trum of the scattered light and the corresponding spec-
+their CS Dust
+tropolarimetry at day 60 after optical maximum of typ-
+SN 2006X (Wang et al. 2008b) and SN 2014J (Marion
+ical SN Ia, for the parameter sets A1, A2, A3, and A4
+et al. 2015; Srivastav et al. 2016; Yang et al. 2017) are
+(see Table 1 for details). In the top panel, we show a
+two highly reddened nearby supernovae. They can serve
+spectrum of the scattered light at day 60 for the refer-
+as good examples to study the location of the dust along
+ence case A1 (black solid line), which is quite similar to
+the line of sight to the SNe.
+the adopted spectral template (black dashed line) at op-
+The dust scattering is color sensitive and if presents
+tical maximum. This similarity suggests the scattered
+can alter the evolution of the color excess E(B - V).
+photons are dominated by those from the peak bright-
+Bulla et al. (2018) adopt a thin shell geometry for the CS
+ness. Among the models we have explored, the CS dust
+or interstellar dust to model the color excess E(B - V)
+geometry has only a weak effect on the spectral features
+curves of SNe Ia to place constraints on the location of
+of the scattered light. For example, the ratios of scat-
+the dust. A single spherical shell is used to simulta-
+tered spectra of A2, A3 and A4 to that of the reference
+neously fit the large values of E(B - V) and its time
+case A1, shown as the colored lines in Figure 7, exhibit
+evolution. Therefore, the optical depth of the shell is
+no strong spectral modulation in the wavelength range
+fixed by the total reddening. In their models, the radius
+10
+M.-K. Hu ET AL.
+10(+0d)
+152/15
+5
+1.3
+0.4
+153/15
+2006X
+144/15
+4
+1.2
+0.3
+S
+0.2
+3
+1.1
+st
+1.0
+(6 - 10) X 1017cm
+0.1
+2
+(5 - 7) X 1018, cm
+0.9
+0.0
+(2 - 2.1) X 1019 cm
+1
+A1(+60d)
+PA2 / PA1
+0.8
+PA3 / PA1
+1.40
+2014)
+PA4 / PA1
+0.6
+10¹
+1.35
+0.4
+Tab
+1.30
+a
+0.2
+10°
+(6 - 11) X 1017 cm
+1.25
+(5 - 7) X 1018cm
+0.0
+1.20
+(1.6 - 1.7) X 1019cm
+4000
+5000
+6000
+7000
+0
+20
+40
+60
+80
+Wavelength (Â)
+Days after B Maximum
+Figure 7. Upper panel: the dashed black line shows the
+Figure 8. The circles are the data of E(B - V) curves of
+spectral template (Io) of SNe Ia at maximum light reduced
+SN 2006X (top panel) and SN 2014J (bottom panel) from
+to an arbitrary scale for clarity. The black line shows the
+Bulla et al. (2018). The three lines represent three shell
+scattered spectrum of the CSM model A1 at +60 days after
+models with different distances from the center. This shows
+peak brightness. The three colored solid lines show the ratios
+that the color curves alone can not provide strong constraints
+of the scattered intensities (15/11) of the CSM models A2,
+on the location of the CS dust.
+A3, and A4 and model A1. Lower panel: the black line is
+the polarization spectrum of the CSM model A1. The three
+As we have shown already there is considerable
+colored solid lines are the ratios of the polarizations (P/PA1)
+amount of degeneracy among the model parameters. To
+of the CMS models A2, A3, or A4 and the model A1. The
+values of the CSM parameters of A1, A2, A3, and A4 are
+compare with the results of Bulla et al. (2018), we con-
+listed in Table 2.
+sider the simple spherical shell model at three distances
+of
+1017
+cm,
+1018
+cm,
+and
+1019
+cm
+to
+fit
+the
+of the inner boundary is set to 0.95 times of the radius of
+E(B - color curves of SN 2006X and 2014J. For
+the outer boundary. The dust distribution is uniform in
+SN 2006X, the optical depths are 0.3, 2.1 and 4.8 for the
+the shell. Their models assume the Henyey-Greenstein
+shells at the distances of 1017 cm, 1018 cm and 1019 cm,
+dust scattering phase function (Henyey & Greenstein
+respectively. For SN 2014J, the optical depths are 0.12,
+1941) and Milky Way-like dust grains. The radii of the
+0.97 and 1.5 at these three distance scales. The source
+dusty shells for SN 2006X and SN 2014J are found to be
+of the observed E(B - V) curves were from the compi-
+44.6 pc (or ~ 1020 cm) and 17.3 pc (or ~ 5 X 10 19 cm),
+lations of Bulla et al. (2018), and the original sources
+respectively, according to these models, thus placing the
+of the data are from Wang et al. (2008b) for SN 2006X
+dust grains at distances that are typically beyond those
+and Amanullah et al. (2015) for SN 2014J. The results
+for CSM. These distances are also much larger than the
+are shown in Figure 8. All three shell models can fit the
+distances of the putative CMS derived by Wang et al.
+time evolution of E(B-V satisfactorily, confirming the
+(2019) based on the evolution of the narrow Na ID lines.
+degenerate nature of model parameters. We thus con-
+In reality, the distribution of the dust responsible
+clude that even with well observed photometric data of
+for the heavily reddened SNe such as SN 2006X and
+highly extinct SNe, it may not be efficient to constrain
+SN 2014J may be rather complicated. A combination
+the location of the dust in the context of light echo mod-
+of interstellar and CS dust is a natural hypothesis. The
+els.
+interstellar dust is less likely to be the cause of time
+varying reddening. Thus only the time evolution of the
+4.5. Fitting the Distance of CSM around SN 2014J
+E(B - V) may likely reveal the CS dust.
+through Polarization
+CSM AROUND SNE IA
+11
+0
+SN2014)
+sets of axisymmetric shells that can fit the photomet-
+Template
+ric and polarimetric data of SN 2014J reasonably. The
+1
+Asyshelll
+Asyshell2
+model parameters are shown in Table 3. The model
+2
+Asyshell3
+fits to the B-band light curve and the polarizations are
+shown in Figure 9. The location of the CS dust is at
+3
+distances larger than 140 light days (Table 3). For com-
+4
+parison, an axisymmetric shell with relatively close dis-
+5
+tance (Asyshell1) is also displayed, which can fit the
+-20
+0
+20
+40
+60
+80
+100
+120
+light curves and the polarization signal during +277 day
+Days after B-band Maximum
+after maximum light precisely, but is excluded by the
+3.0
+Asyshell1
+lack of a clear evolution of the degree of polarization at
+Asyshell2
+early times (Kawabata et al. 2014; Yang et al. 2018).
+2.5
+Asyshell3
+SN2014J
+Obviously, the value of P120/P40 is less than 1.0 for
+2.0
+the Asyshell1 and is much larger than 1.0 for both
+1.5
+Asyshell2 and Asyshell3 models. Determining whether
+1.0
+Asyshell2 or Asyshell3 is more reasonable for the po-
+0.5
+tential distribution of CSM around SN 2014J is slightly
+ambiguous. Figure 9 shows that Asyshell2 produces rel-
+0.0
+0
+50
+100
+150
+200
+250
+300
+atively small degrees of polarization during the whole
+Days after B-band Maximum
+epochs and Asyshell3 produces large polarization during
+about +200 days after B-band maximum light, though
+Figure 9. In the upper panel, the black line is the tem-
+plate of B-band light curve. The red, blue and orange solid
+there are no observations on the polarization in the
+lines are the fitted B-band light curves relating to the model
+same epochs. Nevertheless, the distance of CSM around
+Asyshell1, Asyshell2 and Asyshell3, respectively. The dashed
+SN 2014J is about 5 X 1017 cm, which is consistent with
+lines are the scattered intensity. In the lower panel, the red,
+the results in Yang et al. (2018), though two different
+blue and orange lines are the predicted polarization curves
+distributions (the axisymmetric shell and blob) are used
+by the model Asyshell1, Asyshell2, and Asyshell3, respec-
+respectively. The mass-loss rate of the stellar wind is
+tively. The parameter values of these three axisymmetric
+about 5 X 10-mo/year for the model Asyshell2, which
+shell models are shown in Table 3.
+is consistent with the observational restrictions on CSM
+of SN 2014J.
+T
+Rin (ld)
+Rwid (ld)
+m
+SO
+lobs
+Asyshell1 0.16
+35
+50
+2.0
+0.9
+70°
+5. CONCLUSIONS
+Asyshell2
+0.24
+140
+140
+3.0
+0.5
+30°
+Asyshell3
+0.35
+200
+40
+3.5
+0.7
+40°
+This paper explores systematically the influence of
+dusty CSM on the light curves and polarizations of
+Table 3. The parameter values of Asyshell1, Asyshell2, and
+SNe Ia. We first calculated the scattering kernel func-
+Asyshell3 models shown in Figure 9.
+tions for the Stoke parameters and then constructed the
+light and polarization curves by convolving the spectral
+template of SNe Ia with the corresponding kernel func-
+SN 2014J provides an excellent opportunity to con-
+tions to obtain the model light and polarization curves.
+strain the parameter values of CSM. Although there
+The kernel functions characterize the radiative transfer
+are some restrictions on CSM and its progenitor from
+process for SNe located in an dusty environment and is
+Ha, infrared, and X-ray signals (Margutti et al. 2014;
+obtained with the Monte Carlo method. We adopted the
+Lundqvist et al. 2015; Sand et al. 2016; Johansson et al.
+Mie scattering theory to calculate the dust scattering
+2017). Yang et al. (2018) indeed observed polarization
+cross-section, albedo, and the scattering matrix based
+signals with degree about 1.0% in HST F475W band
+on the refractive index and the specific size distribution
+at around +277 days after maximum light and they at-
+of silicate dusts. We simulated a large number of geo-
+tributed the polarization signals to the scattering from
+metric model grids to study the similarities among the
+a dusty cloud located at around 5 X 1017 cm to the SN.
+kernel functions of intensity between +20 and +100 days
+Here we apply our CS dust scattering model to study
+(Figure 2). Our study shows that the kernel functions
+the photometric and polarimetric of SN 2014J.
+of the Stokes parameter for linear polarization (Q) to be
+The models are constructed for the axisymmetric shell
+very sensitive to the geometric distribution of the dust
+geometry. The model Asyshell2 and Asyshell3 are two
+(Figure 3). As a result, dust distributions that predict
+12
+M.-K. Hu ET AL.
+similar light curves can be more efficiently distinguished
+over a year can be of great value in setting limits on the
+if detailed time evolution of polarization can be acquired
+elusive CS dust around SNe Ia.
+(Figure 5). Our study shows that time sequence of broad
+band polarimetry is a more powerful probe of determin-
+ing the dust geometry than detailed spectropolarimetry
+ACKNOWLEDGMENTS
+but with less time coverage. We also compared the re-
+This work is supported by the National Natural Sci-
+sults between our studies and those of Bulla et al. (2018),
+ence Foundation of China (11761141001) and Key Re-
+and found that the shell models with considerably dif-
+search Program of Frontier Sciences of Chinese Academy
+ferent distance scales can fit the time dependence of the
+of Sciences (QYZDY-SSW-SLH010). X. Wang is sup-
+E(B - V) curves (Figure 8) and argue that the location
+ported by National Natural Science Foundation of China
+of the dust grains responsible for any time varying red-
+(NSFC grants 12033003 and 11633002). This work is
+dening of SNe Ia cannot be determined reliably based on
+partially supported by the Scholar Program of Beijing
+photometric optical data alone. Late time polarimetry,
+Academy of Science and Technology (DZ: BS202002).
+especially broad band polarimetry from a few months to
+We thank M. Bulla, L. Wang, and Y. Yang for sharing
+the data used in this paper.
+REFERENCES
+Aldering, G., Antilogus, P., Bailey, S., et al. 2006, ApJ,
+Gao, J., Jiang, B. W., Li, A., Li, J., & Wang, X. 2015,
+650, 510, doi: 10.1086/507020
+ApJL, 807, L26, doi: 10.1088/2041-8205/807/2/L26
+Amanullah, R., Johansson, J., Goobar, A., et al. 2015,
+Gao, W., Zhao, R., Gao, J., Jiang, B., & Li, J. 2020,
+MNRAS, 453, 3300, doi: 10.1093/mnras/stv1505
+Planet. Space Sci., 183, 104627,
+Bianchi, S., Ferrara, A., & Giovanardi, C. 1996, ApJ, 465,
+doi: 10.1016/j.pss.2018.12.010
+127, doi: 10.1086/177407
+Goobar, A. 2008, ApJL, 686, L103, doi: 10.1086/593060
+Blondin, S., Prieto, J. L., Patat, F., et al. 2009, ApJ, 693,
+Gordon, K. D., Misselt, K. A., Witt, A. N., & Clayton,
+207, doi: 10.1088/0004-637X/693/1/207
+G. C. 2001, ApJ, 551, 269, doi: 10.1086/320082
+Bulla, M., Goobar, A., & Dhawan, S. 2018, MNRAS, 479,
+Hamuy, M., Phillips, M. M., Suntzeff, N. B., et al. 2003,
+3663, doi: 10.1093/mnras/sty1619
+Nature, 424, 651, doi: 10.1038/nature01854
+Chandrasekhar, S. 1950, Radiative transfer.
+He, S., Wang, L., & Huang, J. Z. 2018, ApJ, 857, 110,
+Chevalier, R. A. 1986, ApJ, 308, 225, doi: 10.1086/164492
+doi: 10.3847/1538-4357/aab0a8
+Henyey, L. G., & Greenstein, J. L. 1941, ApJ, 93, 70,
+Chomiuk, L., Soderberg, A. M., Chevalier, R. A., et al.
+doi: 10.1086/144246
+2016, ApJ, 821, 119, doi: 10.3847/0004-637X/821/2/119
+Hillebrandt, W., & Niemeyer, J. C. 2000, ARA&A, 38, 191,
+Crotts, A. P. S. 2015, ApJL, 804, L37,
+doi: 10.1146/annurev.astro.38.1.191
+doi: 10.1088/2041-8205/804/2/L37
+Howell, D. A. 2011, Nature Communications, 2, 350,
+Crotts, A. P. S., & Yourdon, D. 2008, ApJ, 689, 1186,
+doi: 10.1038/ncomms1344
+doi: 10.1086/592318
+Hsiao, E. Y., Conley, A., Howell, D. A., et al. 2007, ApJ,
+De Geyter, G., Baes, M., Fritz, J., & Camps, P. 2013,
+663, 1187, doi: 10.1086/518232
+A&A, 550, A74, doi: 10.1051/0004-6361/201220126
+Iben, I., J., & Tutukov, A. V. 1984, ApJS, 54, 335,
+Ding, J., Wang, L., Brown, P., & Yang, P. 2021, ApJ,
+doi: 10.1086/190932
+submitted
+Inserra, C., Fraser, M., Smartt, S. J., et al. 2016, MNRAS,
+Draine, B. T. 2003, ApJ, 598, 1017, doi: 10.1086/379118
+459, 2721, doi: 10.1093/mnras/stw825
+Draine, B. T., & Lee, H. M. 1984, ApJ, 285, 89,
+Johansson, J., Goobar, A., Kasliwal, M. M., et al. 2017,
+doi: 10.1086/162480
+MNRAS, 466, 3442, doi: 10.1093/mnras/stw3350
+Foley, R. J., Fox, O. D., McCully, C., et al. 2014, MNRAS,
+Kawabata, K. S., Akitaya, H., Yamanaka, M., et al. 2014,
+443, 2887, doi: 10.1093/mnras/stul378
+ApJL, 795, L4, doi: 10.1088/2041-8205/795/1/L4
+Förster, F., González-Gaitán, S., Anderson, J., et al. 2012,
+Li, W., Wang, X., Hu, M., et al. 2019, ApJ, 882, 30,
+ApJL, 754, L21, doi: 10.1088/2041-8205/754/2/L21
+doi: 10.3847/1538-4357/ab2b49
+Fox, O. D., Silverman, J. M., Filippenko, A. V., et al. 2015,
+Lundqvist, P., Nyholm, A., Taddia, F., et al. 2015, A&A,
+MNRAS, 447, 772, doi: 10.1093/mnras/stu2435
+577, A39, doi: 10.1051/0004-6361/201525719
+CSM AROUND SNE IA
+13
+Lundqvist, P., Kundu, E., Pérez-Torres, M. A., et al. 2020,
+Shen, K. J., Guillochon, J., & Foley, R. J. 2013, ApJL, 770,
+ApJ, 890, 159, doi: 10.3847/1538-4357/ab6dc6
+L35, doi: 10.1088/2041-8205/770/2/L35
+Maguire, K., Sullivan, M., Patat, F., et al. 2013, MNRAS,
+Simon, J. D., Gal-Yam, A., Gnat, O., et al. 2009, ApJ, 702,
+436, 222, doi: 10.1093/mnras/stt1586
+1157, doi: 10.1088/0004-637X/702/2/1157
+Maoz, D., Mannucci, F., & Nelemans, G. 2014, ARA&A,
+Srivastav, S., Ninan, J. P., Kumar, B., et al. 2016, MNRAS,
+52, 107, doi: 10.1146/annurev-astro-082812-141031
+457, 1000, doi: 10.1093/mnras/stw039
+Margutti, R., Parrent, J., Kamble, A., et al. 2014, ApJ,
+Steinacker, J., Baes, M., & Gordon, K. D. 2013, ARA&A,
+790, 52, doi: 10.1088/0004-637X/790/1/52
+51, 63, doi: 10.1146/annurev-astro-082812-141042
+Marion, G. H., Sand, D. J., Hsiao, E. Y., et al. 2015, ApJ,
+Sternberg, A., Gal-Yam, A., Simon, J. D., et al. 2011,
+798, 39, doi: 10.1088/0004-637X/798/1/39
+Science, 333, 856, doi: 10.1126/science.1203836
+Mauerhan, J. C., Van Dyk, S. D., Johansson, J., et al. 2017,
+Taddia, F., Stritzinger, M. D., Phillips, M. M., et al. 2012,
+ApJ, 834, 118, doi: 10.3847/1538-4357/834/2/118
+A&A, 545, L7, doi: 10.1051/0004-6361/201220105
+Moore, K., & Bildsten, L. 2012, ApJ, 761, 182,
+Tanaka, M., Kawabata, K. S., Yamanaka, M., et al. 2010,
+doi: 10.1088/0004-637X/761/2/182
+ApJ, 714, 1209, doi: 10.1088/0004-637X/714/2/1209
+Nagao, T., Maeda, K., & Tanaka, M. 2017, ApJ, 847, 111,
+Wang, L. 2005, ApJL, 635, L33, doi: 10.1086/499053
+doi: 10.3847/1538-4357/aa8b0d
+Wang, L., Baade, D., Höflich, P., et al. 2004, ApJL, 604,
+Nagao, T., Maeda, K., & Yamanaka, M. 2018, MNRAS,
+L53, doi: 10.1086/383411
+476, 4806, doi: 10.1093/mnras/sty538
+Nomoto, K. 1982, ApJ, 253, 798, doi: 10.1086/159682
+Wang, L., Goldhaber, G., Aldering, G., & Perlmutter, S.
+Nozawa, T., Wakita, S., Hasegawa, Y., & Kozasa, T. 2015,
+2003, ApJ, 590, 944, doi: 10.1086/375020
+ApJL, 811, L39, doi: 10.1088/2041-8205/811/2/L39
+Wang, L., & Wheeler, J. C. 1996, ApJL, 462, L27,
+Ofek, E. O., Cameron, P. B., Kasliwal, M. M., et al. 2007,
+doi: 10.1086/310026
+ApJL, 659, L13, doi: 10.1086/516749
+Wang, L., & Wheeler, J. C. 2008, Annual Review of
+Patat, F. 2005, MNRAS, 357, 1161,
+Astronomy and Astrophysics, 46, 433,
+doi: 10.1111/j.1365-2966.2005.08568.x
+doi: 10.1146/annurev.astro.46.060407.145139
+Patat, F., Höflich, P., Baade, D., et al. 2012, A&A, 545,
+Wang, X., Chen, J., Wang, L., et al. 2019, ApJ, 882, 120,
+A7, doi: 10.1051/0004-6361/201219146
+doi: 10.3847/1538-4357/ab26b5
+Patat, F., Chandra, P., Chevalier, R., et al. 2007, Science,
+Wang, X., Li, W., Filippenko, A. V., et al. 2008a, ApJ, 677,
+317, 924, doi: 10.1126/science.1143005
+1060, doi: 10.1086/529070
+Peest, C., Camps, P., Stalevski, M., Baes, M., &
+Wang, X., Wang, L., Pain, R., Zhou, X., & Li, Z. 2006,
+Siebenmorgen, R. 2017, A&A, 601, A92,
+ApJ, 645, 488, doi: 10.1086/504312
+doi: 10.1051/0004-6361/201630157
+Wang, X., Li, W., Filippenko, A. V., et al. 2008b, ApJ, 675,
+Pérez-Torres, M. A., Lundqvist, P., Beswick, R. J., et al.
+626, doi: 10.1086/526413
+2014, ApJ, 792, 38, doi: 10.1088/0004-637X/792/1/38
+Wang, X., Filippenko, A. V., Ganeshalingam, M., et al.
+Perlmutter, S., Aldering, G., Goldhaber, G., et al. 1999,
+2009, ApJL, 699, L139,
+ApJ, 517, 565, doi: 10.1086/307221
+doi: 10.1088/0004-637X/699/2/L139
+Porter, A. L., Leising, M. D., Williams, G. G., et al. 2016,
+Webbink, R. F. 1984, ApJ, 277, 355, doi: 10.1086/161701
+ApJ, 828, 24, doi: 10.3847/0004-637X/828/1/24
+Whelan, J., & Iben, Icko, J. 1973, ApJ, 186, 1007,
+Rest, A., Matheson, T., Blondin, S., et al. 2008, ApJ, 680,
+doi: 10.1086/152565
+1137, doi: 10.1086/587158
+Witt, A. N. 1977, ApJS, 35, 1, doi: 10.1086/190463
+Rest, A., Prieto, J. L., Walborn, N. R., et al. 2012, Nature,
+Wolf, S., & Voshchinnikov, N. V. 2004, Computer Physics
+482, 375, doi: 10.1038/nature10775
+Communications, 162, 113, doi: 10.1016/j.cpc.2004.06.070
+Riess, A. G., Filippenko, A. V., Challis, P., et al. 1998, AJ,
+Wood-Vasey, W. M., Wang, L., & Aldering, G. 2004, ApJ,
+116, 1009, doi: 10.1086/300499
+616, 339, doi: 10.1086/424826
+Riess, A. G., Strolger, L.-G., Casertano, S., et al. 2007,
+Yang, Y., Wang, L., Baade, D., et al. 2017, ApJ, 834, 60,
+ApJ, 659, 98, doi: 10.1086/510378
+doi: 10.3847/1538-4357/834/1/60
+Sand, D. J., Hsiao, E. Y., Banerjee, D. P. K., et al. 2016,
+-
+2018, ApJ, 854, 55, doi: 10.3847/1538-4357/aaa76a
+ApJL, 822, L16, doi: 10.3847/2041-8205/822/1/L16

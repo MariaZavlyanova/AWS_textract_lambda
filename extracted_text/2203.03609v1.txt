@@ -1,0 +1,1490 @@
+Human-Aware Object Placement for Visual Environment Reconstruction
+Hongwei Yi¹ Chun-Hao P. Huang¹ Dimitrios Tzionas¹ Muhammed Kocabas1,2
+Mohamed Hassan¹ Siyu Tang2 Justus Thies¹ Michael J. Black¹
+1Max Planck Institute for Intelligent Systems, Tubingen, Germany
+2
+ETH Zurich
+{firstname.lastname} @ {tuebingen mpg.de, inf ethz ch}
+RGB Inputs
+3D Scene Reconstruction
+3D Scene Reconstruction
+3D Scene Reconstruction
+without HSIs
+with Independent HSIs
+with Accumulated HSIs
+Figure 1. From a monocular video sequence, MOVER reconstructs a 3D scene that best affords humans interacting with it. Existing
+methods for monocular 3D scene reconstruction ignore people and produce non-functional scenes. MOVER takes as input: (1) several
+images of human-scene interaction (HSI) from a static camera, (2) a rough estimate of 3D object shape and placement in 3D space [61], and
+(3)
+estimated 3D human bodies interacting with the scene [43, 63]. Each frame contains valuable information about humans, objects, and
+the proximal relationship between them. MOVER accumulates this information across frames, to optimize for a physically plausible and
+functional 3D scene. The final 3D scene is more accurate than the input and enables reasoning about human-scene contact.
+Abstract
+tively and quantitatively using the PROX and PiGraphs
+datasets. The code and data are available for research
+Humans are in constant contact with the world as they
+purposes at https://mover.is.tue.mpg.de/
+move through it and interact with it. This contact is a vi-
+tal source of information for understanding 3D humans,
+3D scenes, and the interactions between them. In fact, we
+1. Introduction
+demonstrate that these human-scene interactions (HSIs) can
+be leveraged to improve the 3D reconstruction of a scene
+Human behavior, and the interaction of humans with their
+from a monocular RGB video. Our key idea is that, as
+environment, is fundamentally about the 3D world. Hence,
+a person moves through a scene and interacts with it, we
+3D reconstruction of both the human and scene can facili-
+accumulate HSIs across multiple input images, and opti-
+tate human behavior analysis. Where and how the human
+mize the 3D scene to reconstruct a consistent, physically
+interacts with a scene can be used to predict future motions
+plausible and functional 3D scene layout. Our optimization-
+and interactions for human-centered AI and robots, or to
+based approach exploits three types of HSI constraints: (1)
+synthesize these for AR/VR and other computer-graphics
+humans that move in a scene are occluded or occlude ob-
+applications.
+jects, thus, defining the depth ordering of the objects, (2)
+Tremendous progress has been made in reconstructing
+humans move through free space and do not interpenetrate
+3D human bodies [24, 36, 38, 41, 43, 44, 64, 65] and 3D
+objects, (3) when humans and objects are in contact, the
+scenes [6, 16, 30, 61, 88] from monocular images or videos,
+contact surfaces occupy the same place in space. Using
+typically in isolation from each other. In real life, though,
+these constraints in an optimization formulation across all
+humans always interact with scenes. Consequently, humans
+observations, we significantly improve the 3D scene layout
+(partially) occlude the scene, and the scene (partially) oc-
+reconstruction. Furthermore, we show that our scene re-
+cludes humans. Strong human-scene occlusion can cause
+construction can be used to refine the initial 3D human
+problems for both scene and human reconstruction.
+pose and shape (HPS) estimation. We evaluate the 3D
+In contrast, recent work on human-scene interaction
+scene layout reconstruction and HPS estimation qualita-
+(HSI), estimates humans and scenes together [10, 26, 83].
+PROX [26] demonstrates how HSI can be used to constrain
+3D human pose estimation, but it requires a 3D scan of the
+full scene to be known a priori. This is often unrealistic
+and cumbersome, as it requires one to conduct offline 3D
+(a) 3D scene reconstruction [61] and HPS [63] in isolation.
+reconstruction by walking around the scene with a depth
+sensor [95] to observe it from many view points.
+What we need, instead, is a method that estimates the
+scene and humans from images of a single color camera.
+This is challenging, as the lack of depth information causes
+the scale and placement of objects to be inconsistent w.r.t.
+the humans interacting with them. This leads to physically
+implausible results, like humans penetrating objects, or lack-
+(b) HolisticMesh [83]. L: single-image results. R: multiple-images result.
+ing physical contact when walking, sitting, or lying down,
+Figure 2. Where existing methods struggle: (a) humans in esti-
+causing bodies to "hover" in the air (see Fig. 2). Methods
+mated scenes penetrate objects or lack contact with objects and
+that reconstruct 3D humans from single views leverage sta-
+"hover" in the air when estimated in isolation [61, 63] (b) humans
+tistical body models [37, 54, 64, 85] as priors on the body
+interpenetrate objects, even, when the 3D scenes and humans are
+shape and pose. However, the same tools do not exist for
+jointly optimized with single (left) or sequential images (right) [83].
+the collective space of 3D scene layouts. This is due to the
+In contrast, we leverage human scene interaction constraints in a
+enormous space of possible object arrangements in indoor
+global optimization across all input frames, to get a scene that is
+3D scenes, the large number of different object classes, and
+coherent with the human motions (see Fig. 1).
+the huge inter-class (e.g., chairs and desks) and intra-class
+(e.g., desk chair and club chair) shape variability.
+object [89], or do not integrate information across several
+interaction frames [10, 83, 89].
+To address the above issues, we present MOVER, which
+Comparisons against the state of the art on the PROX [26]
+stands for "human Motion driven Object placement for Vi-
+and PiGraphs [74] datasets show, that MOVER estimates
+sual Environment Reconstruction". MOVER leverages infor-
+more accurate and realistic 3D scene layouts that satisfy
+mation across several HSI frames to estimate both a plausible
+the expected contacts, while minimizing penetrations, w.r.t.
+3D scene and a moving human that interacts with the scene.
+the moving humans. Interestingly, we find that MOVER's
+Fig. 1 provides a high-level overview. MOVER takes as
+estimated 3D scene can be used to refine the human poses,
+input: (1) a set of color frames from a static monocular cam-
+with a PROX-like method [26]. While estimating 3D scenes
+era, (2) a 3D human mesh inferred for each frame [43, 63],
+and 3D humans from a monocular camera is challenging,
+and (3) a 3D shape inferred for each object detected in the
+our results suggest that they are synergistic tasks that benefit
+scene [40, 61]. As output, MOVER produces a refined 3D
+from each other.
+scene, comprised of repositioned input objects, so that it is
+consistent with the estimated 3D human; i.e., it satisfies the
+2. Related Work
+expected contacts on the body [27], while preventing inter-
+penetration. MOVER uses a novel efficient optimization
+Single-view 3D Human Pose in "Isolation": Estimating
+scheme, that jointly optimizes over camera pose, ground-
+human pose from an image is a long standing problem
+plane pose, and the size and position of 3D objects, while
+[59, 73]. Typically, this is cast as estimating 2D or 3D joints
+being constrained by various HSI constraints.
+of body [2, 57, 67, 78, 79] or whole-body [7, 35, 82] skele-
+MOVER takes three types of HSI constraints into account:
+tons. Recently, there has been a significant shift in research
+(1) humans that move in a scene are occluded or occlude
+interest towards reconstructing the 3D human body surface
+objects, thus, defining the depth ordering of the objects, (2)
+which, in contrast to the joints, interacts directly with objects
+humans move in free space that is not occupied by objects
+and can be observed by commodity cameras. To this end,
+and do not interpenetrate objects, (3) contact between hu-
+many non-parametric methods [20, 46, 70, 71, 77, 80, 94]
+mans and objects means that the contacting parts of their
+have been developed, estimating either depth maps [20, 77],
+surfaces occupy the same place in space. Thus, we leverage
+3D voxels [80, 94], 3D distance fields [70, 71], or free-form
+both explicit (i.e., contact) and implicit (i.e., free space, no
+3D meshes [46]. While these methods can reconstruct bodies
+penetrations) HSI cues. MOVER is able to use these be-
+with details like hair and clothing, they miss semantic infor-
+cause it employs detailed meshes for both the scene and the
+mation and correspondence information. In contrast, para-
+moving human. In contrast, the few attempts that have been
+metric statistical 3D shape models for the body [3, 25, 54]
+made towards a similar goal either use oversimplified shapes
+and whole body [37, 64, 68, 85] provide this information
+[10], i.e., 3D bounding boxes for objects and skeletons for
+and allow re-posing. Since parametric models represent
+humans, work only for static humans that contact a single
+the shape and pose in a low-dimensional space, they are
+Method
+GDI
+Cam.
+C-HOI
+N-HOI
+FGC
+scenes. Several methods model this and learn to populate
+PHOSA [89]
+a 3D scene [27, 51, 90, 91]. In contrast, our work reasons
+Holistic++ [10]
+about the human and its interaction with the 3D scene from
+HolisticMesh [83]
+RGB observations. There are several methods that explore
+Ours
+different kinds of human scene interaction; these can be
+divided into three categories based on the granularity of the
+Table 1. Comparison of the most relevant methods. GDI: Geometric
+interaction between human and scenes: (1) Hand-Object [8,
+Detailed Interaction. C-HOI: Contact-Human-Object Interaction.
+9, 33, 48, 52, 86]. (2) Body-Object [15, 89]. (3) Body-
+N-HOI: Exploiting free space constraints with no object contact.
+Scene [10, 60, 83].
+FGC: Feet-Ground Contact. Cam.: Camera orientation and ground-
+Our proposed method focuses on reconstructing 3D
+plane are refined with humans or not.
+scenes composed of objects and structural elements like
+a powerful tool to estimate the surface from incomplete
+the floor plane, using accumulated human scene interac-
+data (e.g., 2D images with occlusions) through optimization
+tions (body-objects and body-scene). Table 1, overviews
+[5, 37, 64, 84], regression [12, 38, 42, 45], or hybrid ap-
+the most related work that operates on single-view RGB
+proaches [36]. However, all the above methods reason about
+images/videos. PHOSA [89] infers humans and objects to-
+the human in "isolation", i.e. without taking the surround-
+gether when they are in contact. They do not consider the
+ing objects and scenes into account. Thus, they struggle to
+fact that humans do not need to contact an object to constrain
+reconstruct details like contact with objects, and often fail
+its location; their movement through free space constrains ob-
+due to occlusions (e.g., bodies standing behind furniture).
+ject placement. Sminki et al. [87] only consider feet-ground
+PARE [43] addresses this by leveraging localized features
+contact. iMapper [60] maps RGB videos to dynamic "inter-
+and attention, gaining robustness to occlusions. We initialize
+action snapshots", by learning "scenelets" from PiGraphs
+our approach with [43] to refine the 3D scene layout.
+data and fitting them to videos. However, the estimated
+Single-view 3D Scene in Isolation: 3D reconstruction from
+scene is not aligned with the 2D image, and consists of pre-
+single views has been addressed in several recent works
+defined CAD templates with fixed shape and size. Holistic++
+that leverage learned geometrical priors for specific object
+[10] takes learned 3D HOI (Human Object Interaction) into
+classes or entire scenes. Shapes from single views are recon-
+account, to jointly reason about the arrangement of bodies
+structed using generative models for specific object classes
+and objects. Both [60] and [10] do not model geometrically
+[13, 23, 58, 76, 81]. The methods differ in the underly-
+detailed human-scene interaction, due to their simplified rep-
+ing representation, which ranges from volumetric repre-
+resentation of the scene and bodies. Weng et al. [83] jointly
+sentations like occupancy fields [58] and implicit surface
+optimize the reconstructed mesh-based 3D scene and bod-
+functions [53, 62], to explicit surface representations like
+ies, which are initialized from [61] and [64]. The approach
+triangular meshes [21, 81]. To reconstruct scenes, single
+only considers interpenetration between objects and the hu-
+objects can be detected [28] and reconstructed in isolation.
+man, and does not model the explicit human-scene contact.
+Mesh-RCNN [21] detects the objects in an RGB image, and
+Additionally, both [10, 83] do not model the coherence of
+predicts geometry for each object individually. Instead of
+human-scene interactions across frames from monocular
+a generative mesh model, Izadinia et al. [32] and Kuo et
+video. In contrast to the prior work, our contribution lies in
+al. [47] propose to retrieve individual CAD models for the
+incorporating multiple human-scene interactions collectively,
+detected objects in the scene. Bansal et al. [4] predict a nor-
+such that we can reconstruct a more accurate and consistent
+mal map from the input image that is used to align a retrieved
+scene, with physically plausible human-scene interactions.
+CAD model. Instead of predicting normal maps from the
+input image, there is a series of methods that estimate depth
+3. Method
+maps [19, 22, 49, 75], or pixel-aligned implicit functions
+MOVER is an optimization-based approach that recon-
+for objects [69, 72] and scenes [16, 18]. Joint estimation of
+structs a physically plausible 3D scene that is consistent with
+the room layout and objects with scene context information
+predicted human-scene interactions over time (see Fig. 3).
+has been proposed by [11, 30, 31, 61, 88, 92, 93]. However,
+Specifically, our method takes a single RGB video or mul-
+these methods only consider an isolated 3D scene without a
+tiple images {III as input and reconstructs the human
+human in it.
+bodies at each time step t as well as the numerous static
+Note that there are also methods that predict room lay-
+scene objects, both of which reside in a common 3D space
+outs with 3D bounding boxes [17, 29, 50, 56]. In contrast,
+and are supported by a ground plane. In our experiments,
+we reconstruct the detailed object geometry to leverage ex-
+we consider large objects in indoor scenes that humans fre-
+plicit contact point constraints based on the human scene
+quently interact with, i.e., chairs, beds, sofas, and tables.
+interactions, while optimizing for the scene layout.
+We initialize our approach using separate estimates for the
+3D Human-Scene Interaction (HSI): Humans inhabit 3D
+3D human poses [43, 63], the 3D scene [61], and the ground
+RGB Input
+Initialization
+Refine Ground &
+Bbox & Silhouette
+Accumulated HSIs
+Camera with Bodies
+Near&Far Depth Map
+Free Space
+3.5
+3.0
+2.5
+2.0
+Implausible HSIs
+Refined 3D Scene
+Contact
+{ti E R³ Si € R³ A E R} N
+Ground
+Trans
+Cam
+Obj
+Rot
+Figure 3. Overview of MOVER. Given a video/multiple images, the initialization involves using [61] to reconstruct a 3D scene from labeled
+or detected 2D instance segmentation masks [40], estimating the 3D human poses and shape [43, 63], and extracting the expected contact
+vertices on the estimated bodies using POSA [27]. The first step then refines the camera orientation and ground plane using the human
+bodies and their foot contact. Then we optimize the object layout based on 2D bounding boxes and silhouettes to remove interpenetration
+between people and objects, e.g., the human sits through the chair, stands into a table, and the legs are in a bed. Finally, incorporating
+multiple HSIs collectively from the whole video, we can improve the 3D scene further such that the bodies perform more realistic HSIs.
+plane. Using the estimated body poses, we predict contact
+humans and objects can provide clues about the object's
+vertices C for all bodies using POSA [27], which predicts
+depth. We assume the human's depth is accurate. If a human
+likely contact vertices on the body conditioned on pose. We
+occludes an object, then the far side of the person sets a limit
+further divide these vertices into foot contacts (feet and other
+on how close the object can be. Alternatively, if the object
+body part contacts (body The explicit foot contact points
+occludes the person, then the visible side of the person sets
+(feet are used as constraints to refine the camera orientation
+a maximum distance for the object. This is summarized
+and ground plane prediction. Based on this initialization, we
+in Fig. 4. In this way, human-object occlusion provides
+optimize the alignment of the objects by minimizing an ob-
+constraints on scene layout even when there is no human-
+jective function based on multiple human-scene interactions
+object contact.
+(HSIs) across the entire input data.
+Directly applying the ordinal depth loss proposed by Jiang
+et al. [34] for each image is inefficient, because the required
+3.1. 3D Scene Layout Optimization
+memory increases with the number of images. In contrast,
+Our method leverages multiple HSIs to refine the 3D
+we accumulate all single depth ordering maps into one far
+scene. Recall that these HSIs provide the following con-
+depth range map far and one near depth range map Dnear near
+straints: (1) humans that move in a scene are occluded or
+as:
+occlude objects, thus, defining the depth ordering of the ob-
+= ,
+jects (depth order constraint), (2) humans move through free
+space and do not interpenetrate objects (collision constraint),
+near (p) = ,
+(3) when humans and objects are in contact, the contact sur-
+where the pixel p is in the overlapping region between the hu-
+faces occupy the same place in space (contact constraint).
+man bodies and the objects. Using these accumulated depth
+Using these constraints, our objective Liscene-human is:
+range maps, we constrain the depth Di(q) of a projected
+pixel q from object i to lie in the corresponding range:
+Lscene-human = X1 Lbbox + X2Cocc-sil + 3Lscale
++ A4Cdepth + A5 + 16 (1)
+Ldepth = E E
+i gESil¿nMi
+We apply an occlusion-aware silhouette term Locc-sil from
+[89], a 2D bounding box projection term Lbbox that con-
+strains the top-left corner and the width of the bound-
+where Sili is the rendered silhouette of the object i, Mi is
+ing boxes of the objects, and Liscale, an l2-based reg-
+the 2D segmentation mask of it, and Di(q) is the depth of
+ularizer to constraint the variation of the object scales,
+the object i at the pixel q. See more details in Sup.Mat.
+see more details in Sup.Mat.
+Collision Constraint Ccollision- To penalize all interpene-
+Depth Order Constraint Ldepth. The occlusion between
+trating vertices of objects and bodies in the scene, we use
+between the 2D projection of the vertices and the detected
+object masks, and based on the 3D distances between them.
+We consider the vertices of sofa and chair backs and seat
+bottoms as contactable regions, see more details in Sup.Mat.
+We minimize the distance between the contacted bodies
+and the contacted object parts:
+Dtl
+near
+Lcontact = EE
+o
+2 vECbody
+Mt,
+Silt,
+M;
+(Silt Mt, n M;
+where C(Oi) Ly and C(Oi) denote the back and the bot-
+tom seat contact part of an object i, respectively. I(v,Oi)
+is an indicator function (1 only if the contact vertex U is
+assigned to the contacted object Oi, 0 else). CD denotes the
+Mts
+Silt,
+Mi
+(Silt Mt, OM2
+one-directional ChamferDistance (CD), i.e., from bodies to
+objects, because for large furniture like a bed or a sofa, a
+Detected
+Rendered
+Static
+Frontal (top) Region /
+Human Mask
+Body Mask
+Object Mask
+Behind (bottom) Region
+human only contacts a small region of the object. In contrast,
+PHOSA [89] uses a bi-directional CD, which tends to shrink
+Figure 4. Computing depth range maps for the depth order con-
+the object to match the contacted body parts.
+straint Ldepth. Given a detected human mask Mt and a rendered
+body mask Silt, for each object i, we compute the overlap region
+3.2. Optimization
+between Mi and Silt in Mt as the frontal region and extract the
+depth of the backside surface of the body as near depth range Dnear
+We optimize Eq. (1) for a specific scene w.r.t. the param-
+of the object i. Similarly, we compute (Silt - Mt) n Mi, which
+eters Si (scale), Oi (rotation), ti (translation) of the objects
+defines the far depth range far of the object.
+{i = 1 N}, with the Adam optimizer [39]. In the follow-
+ing, we detail the initialization of the 3D scene and the HPS.
+the signed distance field (SDF) of all reconstructed bodies.
+Specifically, we calculate a signed distance field volume Vj
+Initial 3D Scene. We extract a representative 2D image I
+for each body j in a shared 3D world space, and accumulate
+from the input data without any human-object occlusion. For
+them into a global SDF volume as V = min(V1, Vj,...).
+this image, we label or compute 2D bounding boxes Bi and
+The SDF V is stored in a volumetric grid of size 256³,
+an instance masks Mi of all N objects in the scene using
+which spans a padded bounding box of all bodies. For a
+PointRend [40]. We use [61] to get an initial 3D scene S0,
+vertex Ui of an object Oi, we compute the voxel coordinate
+consisting of a ground plane y = Yp and multiple object
+f(ui) = (p(ui), q(ui), k: in the global SDF volume,
+meshes and a perspective camera with yaw, pitch
+where p, q, k: denote the indices of the grid in it, and retrieve
+orientation. Each object i has a translation ti € R³, scale
+the corresponding SDF value
+Si € R³, and a rotation along the y-axis oy € [0, 2nT) param-
+Based on the SDF values of all vertices of all N objects,
+eters. Since the predicted meshes of [61] are incomplete and
+we resolve the scene-body inter-penetration by penalizing
+have holes, we use Occupancy Networks [58] and Marching
+vertices with a negative SDF value:
+Cubes [55] to transform each object mesh into a water-tight
+mesh. Based on this preparation, we first optimize the objec-
+tive function without considering the HSIs:
+2
+u
+Lscene = Locc-sil + X1 Lbbox + X2Lscale.
+Contact Constraint Ccontact- When humans and objects
+are in contact, the contact surfaces occupy the same place
+Initialization the ground and the camera. As shown in the
+in space. We propose a contact constraint to minimize the
+third column of Fig. 3, the estimated ground plane and cam-
+distance between the contacted body parts and its assigned
+era orientation from [61] violates the reconstructed bodies
+corresponding contacted object. PHOSA [89] proposes a
+(e.g., people float in the air). Previous methods either fix the
+loss in which they assign a whole body to only one object,
+camera orientation and only optimize the ground plane and
+whereas humans sometimes interact with multiple objects;
+humans [10], or estimate them independently per image [83],
+e.g., a person sits on a chair and puts their hand on a table.
+which generates inconsistent camera orientation and ground
+In contrast, we directly assign the contacted body vertices
+planes throughout a video. However, the camera orientation
+cbody of each body to different objects, based on the overlap
+and ground plane are essential for producing plausible HSIs.
+Thus, we jointly estimate the ground, camera and multiple
+scene layout reconstruction, both quantitatively (see Sec. 4.1)
+humans together, by applying Lfeet:
+and qualitatively (see Sec. 4.3). On the PROX quantitative
+dataset, we find that our 3D scene reconstructions lead to
+-
+more accurate human shape and pose estimations than our
+baselines. In Sec. 4.2, we analyze the different energy terms
+where R is the camera rotation matrix calculated from pitch,
+and how they contribute to our final results. Qualitative
+yaw, and p denotes a robust Geman-McClure error func-
+results are shown in Fig. 5 and in the suppl. video.
+tion [14] for down-weighting outliers.
+4.1. Quantitative Analysis
+Initial Estimate of 3D Bodies. As an initial shape and
+body pose estimate for the input images {It]E-11 T t==1 where
+We perform several experiments to investigate the effec-
+tiveness of our proposed method in three parts: 3D scene
+a
+human interacts with a 3D scene, we use OpenPose [7]
+reconstruction, human-scene interaction (HSI) reconstruc-
+and SMPLify-X [63]. Specifically, we use a perspective
+tion, and human pose and shape (HPS) estimation. The
+camera projection and estimate the pose parameters O+ of
+results are listed in Tab. 2.
+SMPL-X for each frame with shared body shape parameters
+B. SMPLify-X requires a good initialization and, for this,
+3D Scene Reconstruction. Following [10, 31, 61, 83], we
+we use PARE [43] because it is robust to occlusion and our
+compute the 3D IoU and 2D IoU of object bounding boxes to
+scenes involve significant occlusion. PARE outputs SMPL,
+evaluate the 3D scene reconstruction and the consistency be-
+which we convert to SMPL-X, and use the resulting 3D
+tween the 3D world and 2D image on PROX and PiGraphs.
+joints to initialize SMPLify-X, see more details in Sup.Mat.
+However, the 3D IoU is coarse and does not capture the
+We then optimize all SMPL-X parameters to minimize
+error in an object's orientation, which is quite important for
+an
+objective function EBody of multiple terms, as described
+physically plausible HSI, e.g., a human can not sit on an
+in SMPLify-X [63] (see Esmplify-x) :
+armed chair with the wrong orientation. Therefore, we intro-
+duce the point2surface distance: p2s to measure the distance
+T
+from a cropped object mesh to the estimated 3D object mesh.
+=
+It enables 3D scene reconstruction evaluation with more
+t=1
+geometric details including orientation and shape. Given
+To reduce the jitter, we add a constant-velocity motion
+2D labeled or detected [40] bounding boxes and masks, our
+smoothing term on 3D joints J and their 2D projections
+methods improves the input [61] significantly, and outper-
+JProj:
+forms [83] on all scene-reconstruction metrics and different
+datasets, as shown in Tab. 2 and Tab. 3.
+T-1
+Furthermore, we also evaluate the error of the camera
+= - X
+orientation and ground plane penetration [66] using the es-
+t=1
+timated foot contact vertices (see Tab. 4). We find that that
++ X
+jointly optimizing the camera orientation and the ground
+plane using foot contact significantly improves accuracy
+To avoid noisy and unreliable body poses, and therefore,
+compared to the initial estimate from [61].
+wrong human-scene interactions during optimization, we
+Human-scene Interaction Reconstruction. To evaluate
+also apply a filter based on the constant-velocity assumption.
+the estimated HSI or functionality of the scene (denoting
+We calculate the pelvis acceleration Vt and local joints' ac-
+celeration at of a person in frame t to describe the global
+how well the estimated scene can support human motion),
+body translation and local pose articulations of the body. We
+we compute the metrics as [27, 90, 91]. Specifically, for each
+reconstructed body and 3D scene, we calculate (1) the non-
+filter out those bodies with either large pelvis translation
+collision score to measure the ratio of body mesh vertices
+or incorrect human pose with a large V or a large a respec-
+tively: {j:vj < Tpelvis 7aj < Tlocal,j e {1.I}}, where
+without collision with the estimated 3D scene, divided by
+the number of all body mesh vertices, and (2) the contact
+Tpel, Tlocal are the thresholds for the pelvis acceleration and
+score to denote whether the body is in contact with the 3D
+the local pose acceleration, respectively.
+scene or not. The contact score is 1, if at least one vertex
+4. Experiments
+of a body interpenetrates with the 3D scene. We report the
+mean non-collision score and mean contact scores among
+To evaluate the influence of accumulated HSIs on the
+all videos and all bodies. In Tab. 2, MOVER achieves the
+optimized 3D scene layout, we use two different datasets,
+best balance between non-collision and contact.
+PiGraphs [74] and PROX [26] (see Sup. Mat.). In com-
+The estimated scenes with detected 2D boxes and masks
+parison to [61] and [83], we achieve state-of-the-art 3D
+[40] provide lower HSI scores than with 2D GT. It is mainly
+Methods
+Setting
+Scene Recon.
+HSI
+BBOX&Mask
+Cam.
+Contact
+Depth
+Colli.
+IoU3D 1
+P2St
+IoU2D T
+Non-Col
+1
+Cont. T
+HolisticMesh [83]
+PointRend
+0.211
+0.410
+0.648
+0.990
+0.369
+Total3D [61]
+PointRend
+0.246
+0.319
+0.522
+0.974
+0.510
+Ours
+PointRend
+0.309
+0.221
+0.777
+0.977
+0.612
+HolisticMesh [83]
+2D GT
+0.267
+0.237
+0.745
+0.988
+0.491
+Total3D [61]
+2D GT
+0.196
+0.369
+0.227
+0.963
+0.440
+Ours
+2D GT
+0.383
+0.199
+0.898
+0.986
+0.673
+0.374
+0.206
+0.859
+0.979
+0.738
+0.389
+0.199
+0.904
+0.983
+0.697
+Ablation Study
+2D GT
+0.381
+0.205
+0.904
+0.980
+0.773
+0.393
+0.194
+0.907
+0.983
+0.638
+0.383
+0.199
+0.903
+0.984
+0.674
+Table 2. Quantitative results for 3D scene understanding (3D object detection) and human-scene interaction on the PROX qualitative dataset.
+P2S, Non-Col and Cont denote point2surface distance, Non-Collision and Contactness respectively. In each column, red is the best
+result
+among methods that take 2D labeled masks as input; blue is the second best.
+RGB Input
+Ours
+Total3I [61]
+HolisticMesh [83]
+Figure 5. Qualitative results on PiGraphs (top) and PROX. Our method recovers better 3D scenes and HPS, which supports more plausible
+HSIs, compared with our baseline [61] (Separated Composition) and another single-image baseline (Sequentially Joint Optimize) [83].
+because of the mis-detected objects from [40]. Since the
+with our estimated 3D scene. In Tab. 5, we evaluate the
+reconstructed scenes of [83] do not support human-scene
+HPS estimation on PROX quantitative using the metrics as
+contact well, e.g., a sitting body often floats, due to the lack
+[26]. Specifically, we report (1) the mean per-joint error
+of explicit human-scene contact modeling, it has a better
+(PJE) and (2) the mean vertex-to-vertex distance (V2V).
+non-collision score but a lower contact score.
+For completeness, we also compute these metrics on the
+Procrustes-aligned predictions (denoted as p.PJE and p. V2V,
+Human Pose and Shape (HPS) Estimation. Can we use
+respectively). But note that the metrics w./o. Procrustes
+the estimated 3D scene to, in turn, improve 3D HPS? Here
+alignment (PJE and V2V) are more meaningful, since we
+we follow PROX but replace the scanned 3D scene of PROX
+Methods
+IoU2D T
+IoU3D T
+With G.T Captured 3D Scene Scans
+Cooperative [30]
+68.6
+21.4
+Methods
+PJEL
+V2V t
+p. PJE t
+p. V2V1
+Holistic++ [10]
+75.1
+24.9
+RGB [26]
+220.27
+218.06
+73.24
+60.80
+HolisticMesh [83]
+75.6
+26.3
+PROX [26]
+167.08
+166.51
+71.97
+61.14
+Ours
+79.2
+27.8
+With Image2MesI Models
+HolisticMesh [83]
+190.78
+192.21
+72.72
+61.01
+Table 3. Quantitative results for 3D scene understanding (3D object
+baseline*
+219.62
+222.50
+75.92
+68.34
+detection) on PiGraphs dataset [74].
++CamGP
+176.41
+180.09
+73.41
+67.33
+Cam. Orien.
+Ground Pen
++CamGP+SDF
+175.98
+179.98
+73.96
+68.29
+Methods
+pitch t
+roll t
+mean
+t
+Freq.
+Dist. t
+Ours
+174.37
+178.31
+73.60
+67.89
+Total3D [61]
+0.059
+0.031
+0.045
+0.316
+0.167
+Ours
+0.042
+0.034
+0.038
+0.100
+0.112
+Table 5. Quantitative results for human pose estimation on PROX
+quantitative dataset (baseline* denotes batch-wise SMPLify-X,
+Table 4. Errors in the camera orientation and the ground penetration
+Ours: +CamGP+SDF+Contact.)
+using foot contact on the PROX qualitative dataset.
+want to evaluate the translation, rotation and scaling of the
+humans also move objects, resulting in a dynamical scene
+human body. As shown in Tab. 5, with estimated camera
+layout. While our approach uses individual mesh models
+orientation and ground plane constraints (+CamGP), the
+for each object, we assume a static scene. Nevertheless, we
+PJE and V2V are both improved by a significant margin
+believe that our proposed constraints based on HSIs will be
++43.21 and +42.41 respectively, w.r.t. our baseline. We also
+beneficial for future work on the reconstruction of dynamic
+see that our refined scene can further refine our estimated
+scenes. Besides optimizing the 3D scene layout, we do not
+bodies by applying the SDF loss (+SDF) and the contact loss
+change the initial shape estimate of an object. A more flexi-
+(+Contact) from [26]. Our final body estimation outperforms
+ble and adjustable geometry representation, e.g., an implicit
+HolisticMesh [83] and is similar to PROX, without having
+representation, would be needed, since the initial mesh could
+access to a scanned 3D scanned scene.
+have a wrong topology.
+Human motion reconstruction and 2D instance segmen-
+4.2. Ablation Study
+tation struggle with severe occlusions in the input, which
+To analyze the contribution of the accumulated HSIs and
+leads to poor estimations of HSIs, and, thus, influence our
+the influences of the different constraints, we conducted
+3D scene layout prediction. While not the scope of our work,
+multiple ablation studies; see Tab. 2. All three proposed
+the robustness and accuracy of human motion estimation can
+HSI constraints (depth, contact, and collision) help improve
+be improved by incorporating human motion priors. Also,
+3D scene reconstruction in different ways. The contact
+jointly predicting human motion and the 3D scene with HSIs
+constraint produces the highest human-scene contact scores,
+in a probabilistic framework can be another interesting di-
+but decreases the non-collision score. The collision and
+rection for future work.
+depth both contribute to the non-collision score. However,
+using only the depth achieves a slightly better 3D scene
+6. Conclusion
+evaluation than our full model, but leads to worse human-
+We have introduced MOVER, which reconstructs a 3D
+scene contact scores. By applying all constraints, our method
+can generate a more accurate 3D scene, which supports more
+scene by exploiting 3D humans interacting with it. We
+have demonstrated that accumulated HSIs, computed from a
+physically plausible HSI.
+monocular video, can be leveraged to improve the 3D recon-
+4.3. Qualitative Analysis
+struction of a scene. The reconstructed scene, in turn, can
+be used to improve 3D human pose estimation. In contrast
+In Fig. 5, we show reconstructed 3D scenes and humans
+to the state of the art, MOVER can reconstruct a consistent,
+along with RGB videos, to demonstrate the effectiveness
+physically plausible 3D scene layout.
+and generality of our approach on different datasets (PROX
+Acknowledgments. We thank Yixin Chen, Yuliang Xiu for their
+and PiGraphs). MOVER recovers better 3D scenes and
+fruitful feedback and discussions, Yao Feng, Partha Ghosh and
+HPS compared to our baseline [61] (Separated Composition)
+Maria Paola Forte for proof-reading, and Benjamin Pellkofer for IT
+and another single-image baseline [83] (Sequentially Joint
+support. This work was supported by the German Federal Ministry
+Optimize). See Sup.Mat. for more examples.
+of Education and Research (BMBF): Tübingen AI Center, FKZ:
+5. Discussion
+01IS18039B.
+Disclosure. MJB has received research gift funds from Adobe,
+Based on single-view inputs, our proposed method opti-
+Intel, Nvidia, Meta/Facebook, and Amazon. MJB has financial in-
+mizes the 3D alignment of objects in a static scene. However,
+terests in Amazon, Datagen Technologies, and Meshcapade GmbH.
+References
+628-644, 2016. 3
+[14] M Comer, C Bouman, and J Simmons. Statistical methods
+[1] https://github.com/vchoutas/smplx/tree/master/transfer_model.
+for image segmentation and tomography reconstruction. Mi-
+13
+croscopy and Microanalysis, 16:1852 - 1853, 2010. 6
+[2] Mykhaylo Andriluka, Umar Iqbal, Eldar Insafutdinov, Leonid
+[15] Rishabh Dabral, Soshi Shimada, Arjun Jain, Christian
+Pishchulin, Anton Milan, Juergen Gall, and Bernt Schiele.
+Theobalt, and Vladislav Golyanik. Gravity-aware monocular
+Posetrack: A benchmark for human pose estimation and track-
+3d human-object reconstruction. In International Conference
+ing. In Computer Vision and Pattern Recognition (CVPR),
+on Computer Vision (ICCV), 2021. 3
+pages 5167-5176, 2018. 2
+[16] Manuel Dahnert, Ji Hou, Matthias Nießner, and Angela
+[3] Dragomir Anguelov, Praveen Srinivasan, Daphne Koller, Se-
+Dai. Panoptic 3D scene reconstruction from a single RGB
+bastian Thrun, Jim Rodgers, and James Davis. SCAPE:
+image. Conference on Neural Information Processing Systems
+Shape Completion and Animation of PEople. Transactions
+(NeurIPS), 2021. 1, 3
+on Graphics (TOG), 24(3):408-416, 2005. 2
+[17] Saumitro Dasgupta, Kuan Fang, Kevin Chen, and Silvio
+[4] Aayush Bansal, Bryan Russell, and Abhinav Gupta. Marr
+Savarese. DeLay: Robust spatial layout estimation for clut-
+revisited: 2D-3D alignment via surface normal prediction.
+tered indoor scenes. In Computer Vision and Pattern Recog-
+In Computer Vision and Pattern Recognition (CVPR), pages
+nition (CVPR), pages 616-624, 2016. 3
+5965-5974, 2016. 3
+[18] Maximilian Denninger and Rudolph Triebel. 3d scene recon-
+[5] Federica Bogo, Angjoo Kanazawa, Christoph Lassner, Peter
+struction from a single viewport. In European Conference on
+Gehler, Javier Romero, and Michael J. Black. Keep it SMPL:
+Computer Vision (ECCV), pages 51-67. Springer, 2020. 3
+Automatic estimation of 3D human pose and shape from a
+[19] Huan Fu, Mingming Gong, Chaohui Wang, Kayhan Bat-
+single image. In European Conference on Computer Vision
+manghelich, and Dacheng Tao. Deep ordinal regression net-
+(ECCV), volume 9909, pages 561-578, 2016. 3
+work for monocular depth estimation. In Computer Vision
+[6] Aljaz Bozic, Pablo Palafox, Justus Thies, Angela Dai, and
+and Pattern Recognition (CVPR), pages 2002-2011, 2018. 3
+Matthias Nießner. TransformerFusion: Monocular RGB
+[20] Valentin Gabeur, Jean-Sebastien Franco, Xavier Martin,
+scene reconstruction using transformers. Conference on Neu-
+Cordelia Schmid, and Gregory Rogez. Moulding Humans:
+ral Information Processing Systems (NeurIPS), 2021. 1
+Non-parametric 3D human shape estimation from single
+[7] Zhe Cao, Gines Hidalgo Martinez, Tomas Simon, Shih-En
+images. In International Conference on Computer Vision
+Wei, and Yaser Sheikh. OpenPose: Realtime multi-person 2D
+(ICCV), pages 2232-2241, 2019. 2
+pose estimation using part affinity fields. Transactions on Pat-
+[21] Georgia Gkioxari, Jitendra Malik, and Justin Johnson. Mesh
+tern Analysis and Machine Intelligence (TPAMI), 43(1):172-
+R-CNN. In International Conference on Computer Vision
+186, 2021. 2, 6
+(ICCV), pages 9785-9795, 2019. 3
+[8] Zhe Cao, Ilija Radosavovic, Angjoo Kanazawa, and Jitendra
+[22] Clément Godard, Oisin Mac Aodha, and Gabriel J Bros-
+Malik. Reconstructing hand-object interactions in the wild. In
+tow. Unsupervised monocular depth estimation with left-right
+International Conference on Computer Vision (ICCV), 2021.
+consistency. In Computer Vision and Pattern Recognition
+3
+(CVPR), pages 270-279, 2017. 3
+[9] Yu-Wei Chao, Wei Yang, Yu Xiang, Pavlo Molchanov, Ankur
+[23] Thibault Groueix, Matthew Fisher, Vladimir G. Kim,
+Handa, Jonathan Tremblay, Yashraj S Narang, Karl Van Wyk,
+Bryan C. Russell, and Mathieu Aubry. Atlasnet: A papier-
+Umar Iqbal, Stan Birchfield, et al. Dexycb: A benchmark for
+mâché approach to learning 3d surface generation. CoRR,
+capturing hand grasping of objects. In Computer Vision and
+abs/1802.05384, 2018. 3
+Pattern Recognition (CVPR), 2021. 3
+[24] Riza Alp Guler and Iasonas Kokkinos. HoloPose: Holistic
+[10] Yixin Chen, Siyuan Huang, Tao Yuan, Yixin Zhu, Siyuan Qi,
+3D human reconstruction in-the-wild. In Computer Vision
+and Song-Chun Zhu. Holistic++ scene understanding: Single-
+and Pattern Recognition (CVPR), pages 10884-10894, 2019.
+view 3D holistic scene parsing and human pose estimation
+1
+with human-object interaction and physical commonsense. In
+[25] Nils Hasler, Carsten Stoll, Martin Sunkel, Bodo Rosenhahn,
+International Conference on Computer Vision (ICCV), pages
+and Hans-Peter Seidel. A statistical model of human pose
+8647-8656, 2019. 1, 2, 3, 5, 6, 8
+and body shape. Computer Graphics Forum, 28(2):337-346,
+[11] Wongun Choi, Yu-Wei Chao, Caroline Pantofaru, and Silvio
+2009. 2
+Savarese. Understanding indoor scenes using 3D geometric
+[26] Mohamed Hassan, Vasileios Choutas, Dimitrios Tzionas, and
+phrases. In Computer Vision and Pattern Recognition (CVPR),
+Michael J. Black. Resolving 3D human pose ambiguities
+pages 33-40, 2013. 3
+with 3D scene constraints. In International Conference on
+[12] Vasileios Choutas, Georgios Pavlakos, Timo Bolkart, Dim-
+Computer Vision (ICCV), pages 2282-2292, 2019. 1, 2, 6, 7,
+itrios Tzionas, and Michael J. Black. Monocular expres-
+8, 15
+sive body regression through body-driven attention. In Euro-
+[27] Mohamed Hassan, Partha Ghosh, Joachim Tesch, Dimitrios
+pean Conference on Computer Vision (ECCV), volume 12355,
+Tzionas, and Michael J. Black. Populating 3D scenes by
+pages 20-40, 2020. 3
+learning human-scene interaction. In Computer Vision and
+[13] Christopher B Choy, Danfei Xu, Jun Young Gwak, Kevin
+Pattern Recognition (CVPR), 2021. 2, 3, 4, 6
+Chen, and Silvio Savarese. 3D-R2N2: A unified approach for
+[28] Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Gir-
+single and multi-view 3D object reconstruction. In European
+shick. Mask R-CNN. In International Conference on Com-
+Conference on Computer Vision (ECCV), volume 9912, pages
+puter Vision (ICCV), pages 2961-2969, 2017. 3
+[29] Varsha Hedau, Derek Hoiem, and David Forsyth. Recovering
+13
+the spatial layout of cluttered rooms. In International Con-
+[44] Nikos Kolotouros, Georgios Pavlakos, Michael J. Black, and
+ference on Computer Vision (ICCV), pages 1849-1856, 2009.
+Kostas Daniilidis. Learning to reconstruct 3D human pose
+3
+and shape via model-fitting in the loop. In International
+[30] Siyuan Huang, Siyuan Qi, Yinxue Xiao, Yixin Zhu, Ying Nian
+Conference on Computer Vision (ICCV), 2019. 1
+Wu, and Song-Chun Zhu. Cooperative holistic scene under-
+[45] Nikos Kolotouros, Georgios Pavlakos, Michael J. Black, and
+standing: Unifying 3d object, layout, and camera pose es-
+Kostas Daniilidis. Learning to reconstruct 3D human pose
+timation. In Conference on Neural Information Processing
+and shape via model-fitting in the loop. In International
+Systems (NeurIPS), pages 207-218, 2018. 1, 3, 8
+Conference on Computer Vision (ICCV), pages 2252-2261,
+[31] Siyuan Huang, Siyuan Qi, Yixin Zhu, Yinxue Xiao, Yuanlu
+2019. 3
+Xu, and Song-Chun Zhu. Holistic 3D scene parsing and recon-
+[46] Nikos Kolotouros, Georgios Pavlakos, and Kostas Daniilidis.
+struction from a single RGB image. In European Conference
+Convolutional mesh regression for single-image human shape
+on Computer Vision (ECCV), volume 11211, pages 194-211,
+reconstruction. In Computer Vision and Pattern Recognition
+2018. 3, 6
+(CVPR), pages 4496-4505, 2019. 2
+[32] Hamid Izadinia, Qi Shan, and Steven M Seitz. IM2CAD.
+[47] Weicheng Kuo, Anelia Angelova, Tsung-Yi Lin, and Angela
+In Computer Vision and Pattern Recognition (CVPR), pages
+Dai. Mask2CAD: 3D shape prediction by learning to segment
+5134-5143, 2017. 3
+and retrieve. In European Conference on Computer Vision
+[33] Hanwen Jiang, Shaowei Liu, Jiashun Wang, and Xiaolong
+(ECCV), volume 12348, pages 260-277, 2020. 3
+Wang. Hand-object contact consistency reasoning for human
+[48] Taein Kwon, Bugra Tekin, Jan Stuhmer, Federica Bogo, and
+grasps generation. In International Conference on Computer
+Marc Pollefeys. H2o: Two hands manipulating objects for
+Vision (ICCV), 2021. 3
+first person interaction recognition. In International Confer-
+[34] Wen Jiang, Nikos Kolotouros, Georgios Pavlakos, Xiaowei
+ence on Computer Vision (ICCV), 2021. 3
+Zhou, and Kostas Daniilidis. Coherent reconstruction of
+[49] Iro Laina, Christian Rupprecht, Vasileios Belagiannis, Fed-
+multiple humans from a single image. In Computer Vision
+erico Tombari, and Nassir Navab. Deeper depth prediction
+and Pattern Recognition (CVPR), pages 5579-5588, 2020. 4
+with fully convolutional residual networks. In International
+[35] Sheng Jin, Lumin Xu, Jin Xu, Can Wang, Wentao Liu, Chen
+Conference on 3D Vision (3DV), pages 239-248. IEEE, 2016.
+Qian, Wanli Ouyang, and Ping Luo. Whole-body human pose
+3
+estimation in the wild. In European Conference on Computer
+[50] David C Lee, Martial Hebert, and Takeo Kanade. Geometric
+Vision (ECCV), volume 12354, pages 196-214, 2020. 2
+reasoning for single image structure recovery. In Computer
+[36] Hanbyul Joo, Natalia Neverova, and Andrea Vedaldi. Exem-
+Vision and Pattern Recognition (CVPR), pages 2136-2143,
+plar fine-tuning for 3d human pose fitting towards in-the-wild
+2009. 3
+3d human pose estimation. In International Conference on
+[51] Xueting Li, Sifei Liu, Kihwan Kim, Xiaolong Wang, Ming-
+3D Vision (3DV), 2020. 1, 3
+Hsuan Yang, and Jan Kautz. Putting humans in a scene:
+[37] Hanbyul Joo, Tomas Simon, and Yaser Sheikh. Total capture:
+Learning affordance in 3D indoor environments. In Computer
+A 3D deformation model for tracking faces, hands, and bodies.
+Vision and Pattern Recognition (CVPR), pages 12368-12376,
+In Computer Vision and Pattern Recognition (CVPR), pages
+2019. 3
+8320-8329, 2018. 2, 3, 13
+[52] Shaowei Liu, Hanwen Jiang, Jiarui Xu, Sifei Liu, and Xiao-
+[38] Angjoo Kanazawa, Michael J. Black, David W. Jacobs, and
+long Wang. Semi-supervised 3d hand-object poses estimation
+Jitendra Malik. End-to-end recovery of human shape and
+with interactions in time. In Computer Vision and Pattern
+pose. In Computer Vision and Pattern Recognition (CVPR),
+Recognition (CVPR), 2021. 3
+pages 7122-7131, 2018. 1, 3
+[53] Shaohui Liu, Yinda Zhang, Songyou Peng, Boxin Shi, Marc
+[39] Diederik P. Kingma and Jimmy Ba. Adam: A method for
+Pollefeys, and Zhaopeng Cui. Dist: Rendering deep implicit
+stochastic optimization. 2015. 5
+signed distance function with differentiable sphere tracing.
+[40] Alexander Kirillov, Yuxin Wu, Kaiming He, and Ross Gir-
+In Computer Vision and Pattern Recognition (CVPR), pages
+shick. PointRend: Image segmentation as rendering. In
+2019-2028, 2020. 3
+Computer Vision and Pattern Recognition (CVPR), pages
+[54] Matthew Loper, Naureen Mahmood, Javier Romero, Ger-
+9799-9808, 2020. 2, 4, 5, 6, 7
+ard Pons-Moll, and Michael J. Black. SMPL: A skinned
+[41] Muhammed Kocabas, Nikos Athanasiou, and Michael J.
+multi-person linear model. Transactions on Graphics (TOG),
+Black. VIBE: Video inference for human body pose and
+34(6):248:1-248:16, 2015. 2
+shape estimation. In Computer Vision and Pattern Recogni-
+[55] William E. Lorensen and Harvey E. Cline. Marching cubes:
+tion (CVPR), pages 5253-5263, 2020. 1
+A high resolution 3D surface construction algorithm. Inter-
+[42] Muhammed Kocabas, Nikos Athanasiou, and Michael J.
+national Conference on Computer Graphics and Interactive
+Black. VIBE: Video inference for human body pose and
+Techniques (SIGGRAPH), 1987. 5
+shape estimation. In Computer Vision and Pattern Recogni-
+[56] Arun Mallya and Svetlana Lazebnik. Learning informative
+tion (CVPR), pages 5252-5262, 2020. 3
+edge maps for indoor scene layout prediction. In Interna-
+[43] Muhammed Kocabas, Chun-Hao P. Huang, Otmar Hilliges,
+tional Conference on Computer Vision (ICCV), pages 936-
+and Michael J. Black. PARE: Part attention regressor for
+944, 2015. 3
+3D human body estimation. In Computer Vision and Pattern
+[57] Julieta Martinez, Rayat Hossain, Javier Romero, and James J.
+Recognition (CVPR), pages 11127-11137, 2021. 1, 2, 3, 4, 6,
+Little. A simple yet effective baseline for 3D human pose
+estimation. In International Conference on Computer Vision
+[70] Shunsuke Saito, Zeng Huang, Ryota Natsume, Shigeo Mor-
+(ICCV), pages 2659-2668, 2017. 2
+ishima, Angjoo Kanazawa, and Hao Li. PIFu: Pixel-aligned
+[58] Lars Mescheder, Michael Oechsle, Michael Niemeyer, Se-
+implicit function for high-resolution clothed human digitiza-
+bastian Nowozin, and Andreas Geiger. Occupancy networks:
+tion. In International Conference on Computer Vision (ICCV),
+Learning 3D reconstruction in function space. In Computer
+pages 2304-2314, 2019. 2
+Vision and Pattern Recognition (CVPR), pages 4460-4470,
+[71] Shunsuke Saito, Tomas Simon, Jason Saragih, and Hanbyul
+2019. 3, 5
+Joo. PIFuHD: Multi-level pixel-aligned implicit function for
+[59] Thomas B. Moeslund, Adrian Hilton, and Volker Krüger. A
+high-resolution 3D human digitization. In Computer Vision
+survey of advances in vision-based human motion capture and
+and Pattern Recognition (CVPR), pages 84-93, 2020. 2
+analysis. Computer Vision and Image Understanding (CVIU),
+[72] Shunsuke Saito, Tomas Simon, Jason Saragih, and Hanbyul
+104(2):90-126, 2006. 2
+Joo. Pifuhd: Multi-level pixel-aligned implicit function for
+[60] Aron Monszpart, Paul Guerrero, Duygu Ceylan, Ersin Yumer,
+high-resolution 3d human digitization. In Computer Vision
+and Niloy J Mitra. iMapper: interaction-guided scene map-
+and Pattern Recognition (CVPR), June 2020. 3
+ping from monocular videos. Transactions on Graphics
+[73] Nikolaos Sarafianos, Bogdan Boteanu, Bogdan Ionescu, and
+(TOG), 38(4):92:1-92:15, 2019. 3
+Ioannis A. Kakadiaris. 3D human pose estimation: A review
+[61] Yinyu Nie, Xiaoguang Han, Shihui Guo, Yujian Zheng, Jian
+of the literature and analysis of covariates. Computer Vision
+Chang, and Jian Jun Zhang. Total3DUnderstanding: Joint
+and Image Understanding (CVIU), 152:1-20, 2016. 2
+layout, object pose and mesh reconstruction for indoor scenes
+[74] Manolis Savva, Angel X Chang, Pat Hanrahan, Matthew
+from a single image. In Computer Vision and Pattern Recog-
+Fisher, and Matthias Nießner. PiGraphs: Learning interac-
+nition (CVPR), pages 55-64, 2020. 1, 2, 3, 4, 5, 6, 7, 8, 13,
+tion snapshots from observations. Transactions on Graphics
+15
+(TOG), 35(4):139:1-139:12, 2016. 2, 6, 8, 13, 15
+[62] Jeong Joon Park, Peter Florence, Julian Straub, Richard New-
+[75] Daeyun Shin, Zhile Ren, Erik B Sudderth, and Charless C
+combe, and Steven Lovegrove. DeepSDF: Learning con-
+Fowlkes. 3d scene reconstruction with multi-layer depth
+tinuous signed distance functions for shape representation.
+and epipolar transformers. In International Conference on
+In Computer Vision and Pattern Recognition (CVPR), pages
+Computer Vision (ICCV), pages 2172-2182, 2019. 3
+165-174, 2019. 3
+[76] Vincent Sitzmann, Michael Zollhöfer, and Gordon Wetzstein.
+[63] Georgios Pavlakos, Vasileios Choutas, Nima Ghorbani,
+Scene representation networks: Continuous 3d-structure-
+Timo Bolkart, Ahmed AA Osman, Dimitrios Tzionas, and
+aware neural scene representations. In Conference on Neural
+Michael J. Black. Expressive body capture: 3d hands, face,
+Information Processing Systems (NeurIPS), 2019. 3
+and body from a single image. In Computer Vision and Pat-
+[77] David Smith, Matthew Loper, Xiaochen Hu, Paris Mavroidis,
+tern Recognition (CVPR), pages 10975-10985, 2019. 1, 2, 3,
+and Javier Romero. FACSIMILE: Fast and accurate scans
+4, 6, 13
+from an image in less than a second. In International Con-
+[64] Georgios Pavlakos, Vasileios Choutas, Nima Ghorbani, Timo
+ference on Computer Vision (ICCV), pages 5329-5338, 2019.
+Bolkart, Ahmed A. A. Osman, Dimitrios Tzionas, and
+2
+Michael J. Black. Expressive body capture: 3D hands, face,
+[78] Bugra Tekin, Isinsu Katircioglu, Mathieu Salzmann, Vincent
+and body from a single image. In Computer Vision and Pat-
+Lepetit, and Pascal Fua. Structured prediction of 3D human
+tern Recognition (CVPR), pages 10975-10985, 2019. 1, 2,
+pose with deep neural networks. In British Machine Vision
+3
+Conference (BMVC), 2016. 2
+[65] Georgios Pavlakos, Nikos Kolotouros, and Kostas Daniilidis.
+[79] Denis Tome, Chris Russell, and Lourdes Agapito. Lifting
+TexturePose: Supervising human mesh estimation with tex-
+from the deep: Convolutional 3D pose estimation from a
+ture consistency. In International Conference on Computer
+single image. In Computer Vision and Pattern Recognition
+Vision (ICCV), pages 803-812, 2019. 1
+(CVPR), pages 5689-5698, 2017. 2
+[66] Davis Rempe, Tolga Birdal, Aaron Hertzmann, Jimei Yang,
+[80] Gul Varol, Duygu Ceylan, Bryan Russell, Jimei Yang, Ersin
+Srinath Sridhar, and Leonidas J. Guibas. Humor: 3d human
+Yumer, Ivan Laptev, and Cordelia Schmid. BodyNet: Vol-
+motion model for robust pose estimation. In International
+umetric inference of 3D human body shapes. In European
+Conference on Computer Vision (ICCV), 2021. 6
+Conference on Computer Vision (ECCV), pages 20-38, 2018.
+[67] Grégory Rogez and Cordelia Schmid. MoCap-guided data
+2
+augmentation for 3D pose estimation in the wild. In Confer-
+[81] Nanyang Wang, Yinda Zhang, Zhuwen Li, Yanwei Fu, Wei
+ence on Neural Information Processing Systems (NeurIPS),
+Liu, and Yu-Gang Jiang. Pixel2mesh: Generating 3d mesh
+pages 3108-3116, 2016. 2
+models from single rgb images. In ECCV, pages 52-67, 2018.
+[68] Javier Romero, Dimitrios Tzionas, and Michael J. Black. Em-
+3
+bodied hands: Modeling and capturing hands and bodies to-
+[82] Philippe Weinzaepfel, Romain Brégier, Hadrien Combaluzier,
+gether. Transactions on Graphics (TOG), 36(6):245:1-245:17,
+Vincent Leroy, and Grégory Rogez. DOPE: distillation of
+2017. 2
+part experts for whole-body 3d pose estimation in the wild. In
+[69] Shunsuke Saito, Zeng Huang, Ryota Natsume, Shigeo Mor-
+European Conference on Computer Vision (ECCV), volume
+ishima, Angjoo Kanazawa, and Hao Li. Pifu: Pixel-aligned
+12371, pages 380-397, 2020. 2
+implicit function for high-resolution clothed human digitiza-
+[83] Zhenzhen Weng and Serena Yeung. Holistic 3D human and
+tion. In International Conference on Computer Vision (ICCV),
+scene mesh estimation from single view images. In Computer
+2019. 3
+Vision and Pattern Recognition (CVPR), 2021. 1, 2, 3, 5, 6, 7,
+8, 13, 15
+(CVPR), pages 11825-11834, 2021. 15
+[84] Donglai Xiang, Hanbyul Joo, and Yaser Sheikh. Monocular
+total capture: Posing face, body, and hands in the wild. In
+Computer Vision and Pattern Recognition (CVPR), pages
+10957-10966, 2019. 3
+[85] Hongyi Xu, Eduard Gabriel Bazavan, Andrei Zanfir,
+William T. Freeman, Rahul Sukthankar, and Cristian Smin-
+chisescu. GHUM & GHUML: Generative 3D human shape
+and articulated pose models. In Computer Vision and Pattern
+Recognition (CVPR), pages 6183-6192, 2020. 2
+[86] Lixin Yang, Xinyu Zhan, Kailin Li, Wenqiang Xu, Jiefeng
+Li, and Cewu Lu. Cpf: Learning a contact potential field to
+model the hand-object interaction. In Computer Vision and
+Pattern Recognition (CVPR), 2021. 3
+[87] Andrei Zanfir, Elisabeta Marinoiu, and Cristian Sminchis-
+escu. Monocular 3D pose and shape estimation of multiple
+people in natural scenes - the importance of multiple scene
+constraints. In Computer Vision and Pattern Recognition
+(CVPR), pages 2148-2157, 2018. 3
+[88] Cheng Zhang, Zhaopeng Cui, Yinda Zhang, Bing Zeng, Marc
+Pollefeys, and Shuaicheng Liu. Holistic 3D scene under-
+standing from a single image with implicit representation.
+In Computer Vision and Pattern Recognition (CVPR), pages
+8833-8842, 2021. 1, 3
+[89] Jason Y Zhang, Sam Pepose, Hanbyul Joo, Deva Ramanan,
+Jitendra Malik, and Angjoo Kanazawa. Perceiving 3D human-
+object spatial arrangements from a single image in the wild. In
+European Conference on Computer Vision (ECCV), volume
+12357, pages 34-51, 2020. 2, 3, 4, 5
+[90] Siwei Zhang, Yan Zhang, Qianli Ma, Michael J. Black, and
+Siyu Tang. PLACE: Proximity learning of articulation and
+contact in 3D environments. In International Conference on
+3D Vision (3DV), 2020. 3, 6
+[91] Yan Zhang, Mohamed Hassan, Heiko Neumann, Michael J
+Black, and Siyu Tang. Generating 3D people in scenes with-
+out people. In Computer Vision and Pattern Recognition
+(CVPR), pages 6194-6204, 2020. 3, 6
+[92] Yinda Zhang, Shuran Song, Ersin Yumer, Manolis Savva,
+Joon-Young Lee, Hailin Jin, and Thomas Funkhouser.
+Physically-based rendering for indoor scene understanding
+using convolutional neural networks. In Computer Vision and
+Pattern Recognition (CVPR), pages 5287-5295, 2017. 3
+[93] Yibiao Zhao and Song-Chun Zhu. Scene parsing by integrat-
+ing function, geometry and appearance models. In Computer
+Vision and Pattern Recognition (CVPR), pages 3119-3126,
+2013. 3
+[94] Zerong Zheng, Tao Yu, Yixuan Wei, Qionghai Dai, and Yebin
+Liu. DeepHuman: 3D human reconstruction from a single im-
+age. In International Conference on Computer Vision (ICCV),
+pages 7738-7748, 2019. 2
+[95] Michael Zollhöfer, Patrick Stotko, Andreas Görlitz, Christian
+Theobalt, Matthias Nießner, Reinhard Klein, and Andreas
+Kolb. State of the art on 3D reconstruction with RGB-D
+cameras. Computer Graphics Forum (CGF), 37(2):625-652,
+2018. 2
+[96] Cheng Zou, Bohan Wang, Yue Hu, Junqi Liu, Qian Wu, Yu
+Zhao, Boxun Li, Chenguang Zhang, Chi Zhang, Yichen Wei,
+et al. End-to-end human object interaction detection with hoi
+transformer. In Computer Vision and Pattern Recognition
+Appendices
+Initial Estimate of 3D Bodies. We use PARE [43] to ini-
+tialize the body poses and shape (shape B, pose 0, scale s).
+Since our approach uses the SMPL-X [63] model, we apply
+In this supplemental document, we provide additional infor-
+[1] to convert the SMPL parameter estimated from PARE. In
+mation about the dataset, implementation details, extended
+addition, we use the calibrated camera intrinsic parameters
+sensitivity analysis, failure cases, additional qualitative re-
+K provided by the datasets (PiGraph and PROX). To con-
+sults and discussion of potential misuse.
+vert the estimations of PARE which uses a weak perspective
+A. Dataset
+camera model, we compute the corresponding translation
+tbody by:
+PiGraphs. PiGraphs [74] consists of 60 RGB-D videos of
+30 scenes. The dataset is recorded with a Microsoft Kinect
+IIko (s(R(J(B))) = IIk ((R0(J(B)) + +body),
+One, and is designed to capture human and object arrange-
+where K0 denotes the camera intrinsic parameters of the
+ments in different kinds of interaction. Each video recording
+weak perspective camera model with focal length 5000.
+is about 2-minute long with 5 fps. It contains labeled 3D
+bounding boxes of objects in the scene and human poses
+Contact Regions of Objects. We automatically calculate
+represented as 3D skeletons. We use this dataset to evaluate
+the contact regions of objects based on the normal of the
+the scene reconstruction and compare with [61, 83]. Note
+vertices. Specifically, the vertices, whose normals are along
+that the provided human poses are noisy and not suitable for
+y-axis, are the bottom or top part of the objects, while the
+an evaluation of 3D human shape and pose estimation.
+vertices with along z-axis normal are the back part of the
+PROX Qualitative. PROX qualitative contains 61 RGB-D
+objects. We term that sofas and chairs have two contact
+videos at 30 fps of human motion/interaction in 12 scanned
+regions, i.e., bottom and back parts, while beds and tables
+static 3D scenes. The data has been recorded using the
+only have top part as the contact region, shown in Fig. 7.
+Microsoft Kinect One and StructureIO sensor. To enable
+Optimization. We use the Adam optimizer [37] to optimize
+3D scene reconstruction evaluation on this dataset, we
+the final energy term with a step size of 0.002 and 3000
+segment and label each object with its 3D bounding box.
+iterations. We set X1, 12, À3 as 1000, 0.3, 1000 respectively,
+Since there are two scenes (i.e., "BasementSittingBooth"
+for 2D bounding box term, occlusion-aware term and scale
+and "NOSittingBooth") containing an inseparable object (see
+term. The weights of our proposed depth order constraint,
+Fig. 6), we evaluate all methods on the remaining 10 scenes
+collision constraint, and contact constraint are set to 14 =
+using the corresponding 51 videos as input.
+8, A5 = 1000, and 16 = 1e5, respectively. We use two
+PROX Quantitative. PROX quantitative captures a se-
+robust Geman-McClure error fuctions, p1, p2 with parameter
+quence of human-scene interaction RGB-D frames within
+0.1 on 3D joints, and one p3 with parameter 100 on 2D
+a synchronized Vicon marker-based motion capturing sys-
+projection of 3D joints.
+tem. In total, the dataset contains 178 frames and provides
+Our method takes around 30 minutes for 3000 iterations
+groundtruth body meshes, which accounts for human pose
+to optimize a 3D scene with accumulated HSIs constraints.
+and shape (HPS) evaluation. For fair evaluation on HPS,
+In comparison, HolisticMesh [83] which jointly optimizes
+we input all images into HolisticMesh [83] and ours to get a
+human and a 3D scene for one single image, directly trains
+refined scene and use a refined scene to get refined bodies. In
+the parameters of the network in Total3DUnderstanding [61]
+addition, we also label this scene for 3D scene reconstruction
+to regress the 3D scene, which is time-consuming and costs
+evaluation, see Fig. 6.
+around 40 minutes. For the human optimization, it runs twice
+(5 minutes), i.e., one is a HPS initialization used to refine the
+B. Implementation Details
+scenes, and the second pass is done using the refined scenes.
+In total, HolisticMesh takes 45 minutes for one single image.
+Loss Terms. The 2D bounding box term Lbbox is a l1 norm
+Our method takes almost the same time for a scene (around
+between the object's projected 3D bounding box Proji and
+10 objects) regardless how many frames in the input video.
+its corresponding detected 2D bounding box Deti, expressed
+The number of frames in a video only influences the time of
+with the top-left corner coordinate x min, Ymin and width
+calculating the depth map, the SDF volume and the contact
+value.
+information of each body. However this can be done once
+Lbbox = > Il Proja - a E { Ymin, width}.
+and is easily processed in parallel before the optimization. In
+contrast, HolisticMesh [83] processes a video sequentially,
+The scale term prevents object scales S deviating far from
+i.e., one frame after another. Therefore, the optimization
+the initial estimates S jinit from Total3D [60]:
+time increases w.r.t. the number of frames in a video.
+=
+i
+(A) PROX qualitative dataset
+(B) PROX quantitative dataset
+Figure 6. We crop out each object separately and label the corresponding 3D bounding box for 10 scenes in PROX qualitative dataset and
+one scene in PROX quantitative dataset.
+Specifically, we use 10 sequences of the PROX qualitative
+dataset (one sequence per scene) and randomly sample 10
+segments of 10s, 20s, 30s length from each sequence. We
+observe that longer sequences result in better performance,
+i.e., higher IoU and lower standard deviation. We will add
+this experiment and clarify that performance depends on the
+number of HSIs and not the video length, i.e., a short video
+with many HSIs results in a better reconstruction than a long
+video with a few unique HSIs.
+sofa
+chair
+bed
+table
+10s
+20s
+30s
+entire videos (51s)
+3D IoU mean 1
+0.389
+0.395
+0.407
+0.424
+3D IoU std. t
+0.018
+0.015
+0.010
+Figure 7. Contact regions of different objects.
+Table 6. Ablation study on different length of videos as input. The
+average length of entire videos is 51s.
+C. Sensitivity Analysis.
+We also did a sensitivity study w.r.t. noise in the ini-
+tialization. In Tab. 7, we add uniform noise on the initial
+Our approach uses HSIs observed in a video. A longer
+video potentially has more HSIs, which results in more con-
+scale, translation and orientation of objects predicted by To-
+straints for our objective function. In Tab. 6, we analyze
+tal3D [60], and report the 3D IoU. MOVER is robust to noisy
+how different video lengths influence scene reconstruction,
+orientation and translation estimates from Total3D [60], but
+by reporting the 3D intersection-over-union (IoU) metric.
+sensitive to the scale variation. This is because we cur-
+scale noise
+25%
++ 15%
+0.05%
+3D IoU T
+0.345
+0.3805
+0.4105
+and outperforms the previous method [83] with a big margin
+transl.
+I 30cm
+I 20cm
+10m
+in both 3D scene reconstruction metrics and human-scene
+3D IoU 1
+0.4175
+0.416
+0.415
+interaction metrics.
+orien.
+45°
+30°
+15°
+3D IoU T
+0.4205
+0.418
+0.4205
+Table 7. Sensitivity analysis on scene reconstr. with uniform
+E. Failure Cases
+noise on input scale, translation and orientation from Total3D [60]
+(Werkraum_03301.01 video). Scene w/o noise has 0.417 3D IoU.
+In this section, we discuss and show the failure cases of
+Methods
+Scene Recon.
+HSI
+our method. Besides optimizing the 3D scene layout, we
+IoU3D 1
+P2SJ
+IoU2D 1
+Non-Col
+Cont. 1
+do not change the initial shape estimate of an object. Thus,
+HolisticMesh [83]
+0.239
+0.133
+0.533
+0.948
+0.951
+wrong estimated geometry shape can still violate human's
+Total3D [61]
+0.063
+0.409
+0.342
+0.940
+0.436
+Ours
+0.390
+0.095
+0.862
+0.972
+0.934
+interaction, as shown in (A) in Fig. 8. A more flexible and
+adjustable geometry representation, e.g., an implicit repre-
+Table 8. Quantitative results for 3D scene understanding (3D object
+sentation, would be needed. Human motion reconstruction
+detection) and human-scene interaction on the PROX quantitative
+struggle with severe occlusions in the input, that leads to
+dataset. P2S, Non-Col and Cont denote point2surface distance,
+Non-Collision and Contactness respectively.
+wrong body poses as well as poor estimations of HSIs, and,
+thus, influence our 3D scene layout prediction, see (B) in
+Fig. 8. While not the scope of our work, the robustness
+and accuracy of human motion estimation can be improved
+by incorporating human motion priors or learning-based
+probabilistic human pose and estimation network. Severe
+occlusion can also causes missing objects in the scene like
+the chair in Fig. 8(C).
+In our pipeline, we currently consider the contact between
+detected objects and bodies. As a potential future extension
+of our method, one can also leverage the information from
+2D learning-based human-object interaction (HOI) detection
+network [96], by using contacted bodies to discover missing
+objects; or learn a model that jointly regress human-object
+interaction and their shape.
+F. Additional Qualitative Results
+(A)
+(B)
+(C)
+In Fig. 9 and Fig. 10, we present additional qualitative
+results on PROX [26] qualitative and PiGraphs [74] dataset
+Figure 8. Failure cases. (A) The estimated sofa has arms, which
+does not match the unarmed sofa in the input image. (B) The half
+respectively. As can be seen, our method performs well on a
+bottom body is occluded, that leads to a wrong pose estimation as
+variety of different scenes and predicts a physically plausible
+well as HSI observation. (C) The body is sitting "in the air", where
+and functional scene layout. We also refer to the suppl. video
+the chair is missing.
+for results.
+G. Discussion of Potential Misuse
+rently regularize the optimization to the initial scale rela-
+tively strongly; i.e., we cannot deviate much from a noisy
+Our approach is not intended for any surveillance appli-
+estimate to "correct" it. Relaxing Lscale easily resolves this.
+cation. Our goal is to understand how humans interact and
+move in scenes from videos (e.g., from TV sitcoms), to this
+D. More Evaluation Results on PROX Quanti-
+end both the scene geometry and the human pose need to
+tative Dataset.
+be reconstructed. Our method could be misused in potential
+surveillance applications that curtail human rights and civil
+We also evaluate 3D scene reconstruction and human-
+liberties, but we will restrict the usage of our method in a
+scene interaction on PROX quantitative, as shown in Tab. 8.
+legal way.
+Our method improves our input baseline [61] significantly
+Figure 9. More qualitative results on PROX qualitative dataset.
+C
+Figure 10. More qualitative results on PiGraphs dataset.
